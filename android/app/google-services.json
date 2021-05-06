@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "904571732022",
+    "project_id": "eduverse-98821",
+    "storage_bucket": "eduverse-98821.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:904571732022:android:6005b9b42ab216d8b45897",
+        "android_client_info": {
+          "package_name": "com.snehametlon.eduverse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "904571732022-4loqt4e3olalmsshu4fudghrcqqlods3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.snehametlon.eduverse",
+            "certificate_hash": "8b9b15166aa40997189e49e395566270695d0b18"
+          }
+        },
+        {
+          "client_id": "904571732022-shs2r5m29ucrn4oq5ug1bjs9ju8f8q6a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwzke6y4DOR5v8dhtjaIJvOgXlmj-W1j8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "904571732022-shs2r5m29ucrn4oq5ug1bjs9ju8f8q6a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
