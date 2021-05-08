@@ -34,10 +34,12 @@ class _TextBoxState extends State<TextBox> {
               borderSide: BorderSide(color: Color(0xFF54ABD0), width: 2),
             ),
           ),
-          // validator: FormValidator().validateEmail,
-          // onSaved: (String value) {
-          //   _loginData.email = value;
-          // },
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'This field is required';
+            }
+            return null;
+          },
         ),
       ),
     );
