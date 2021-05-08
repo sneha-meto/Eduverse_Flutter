@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:eduverse/constants.dart';
+import 'package:eduverse/constants.dart';
 
 class Tabs extends StatefulWidget {
   Tabs();
@@ -71,7 +72,7 @@ class _TabsState extends State<Tabs> {
                             margin:
                                 EdgeInsets.only(top: 20, left: 20, right: 20),
                             decoration: new BoxDecoration(
-                              color: Colors.blueAccent,
+                              color: kCyan,
                               border:
                                   Border.all(color: Colors.black, width: 0.0),
                               borderRadius:

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:eduverse/Components/textandbutton.dart';
+
+import 'main_page.dart';
 
 class Teacher extends StatefulWidget {
   @override
@@ -43,94 +46,22 @@ class _TeacherState extends State<Teacher> {
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 30.0,
+                        fontSize: 28.0,
                       ),
                     ),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Container(
-                    height: 50.0,
-                    child: TextFormField(
-                      keyboardType: TextInputType.name,
-                      autofocus: false,
-                      decoration: InputDecoration(
-                        hintText: 'First Name',
-                        // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                              BorderSide(color: Color(0xFF54ABD0), width: 2),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                              BorderSide(color: Color(0xFF54ABD0), width: 2),
-                        ),
-                      ),
-                      // validator: FormValidator().validateEmail,
-                      // onSaved: (String value) {
-                      //   _loginData.email = value;
-                      // },
-                    ),
-                  ),
+                TextBox(
+                  textInputType: TextInputType.name,
+                  hint: "First Name",
                 ),
-                Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Container(
-                    height: 50.0,
-                    child: TextFormField(
-                      keyboardType: TextInputType.name,
-                      autofocus: false,
-                      decoration: InputDecoration(
-                        hintText: 'Last Name',
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                              BorderSide(color: Color(0xFF54ABD0), width: 2),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                              BorderSide(color: Color(0xFF54ABD0), width: 2),
-                        ),
-                      ),
-                      // validator: FormValidator().validateEmail,
-                      // onSaved: (String value) {
-                      //   _loginData.email = value;
-                      // },
-                    ),
-                  ),
+                TextBox(
+                  textInputType: TextInputType.name,
+                  hint: "Last Name",
                 ),
-                Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Container(
-                    height: 50.0,
-                    child: TextFormField(
-                      style: TextStyle(color: Colors.white),
-                      keyboardType: TextInputType.emailAddress,
-                      autofocus: false,
-                      decoration: InputDecoration(
-                        hintText: 'Official Email',
-                        hintStyle: TextStyle(color: Colors.white),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                              BorderSide(color: Color(0xFF54ABD0), width: 2),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                              BorderSide(color: Color(0xFF54ABD0), width: 2),
-                        ),
-                      ),
-                      // validator: FormValidator().validateEmail,
-                      // onSaved: (String value) {
-                      //   _loginData.email = value;
-                      // },
-                    ),
-                  ),
+                TextBox(
+                  textInputType: TextInputType.emailAddress,
+                  hint: "Official Email",
                 ),
                 Padding(
                   padding: EdgeInsets.all(5.0),
@@ -234,85 +165,23 @@ class _TeacherState extends State<Teacher> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Container(
-                    height: 50.0,
-                    child: TextFormField(
-                      keyboardType: TextInputType.phone,
-                      autofocus: false,
-                      decoration: InputDecoration(
-                        hintText: 'Phone Number',
-                        // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                              BorderSide(color: Color(0xFF54ABD0), width: 2),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                              BorderSide(color: Color(0xFF54ABD0), width: 2),
-                        ),
-                      ),
-                      // validator: FormValidator().validateEmail,
-                      // onSaved: (String value) {
-                      //   _loginData.email = value;
-                      // },
-                    ),
-                  ),
+                TextBox(
+                  textInputType: TextInputType.number,
+                  hint: "Phone Number",
                 ),
-                Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Container(
-                    height: 50.0,
-                    child: TextFormField(
-                      keyboardType: TextInputType.visiblePassword,
-                      autofocus: false,
-                      decoration: InputDecoration(
-                        hintText: 'Password',
-                        // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                              BorderSide(color: Color(0xFF54ABD0), width: 2),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                              BorderSide(color: Color(0xFF54ABD0), width: 2),
-                        ),
-                      ),
-                      // validator: FormValidator().validateEmail,
-                      // onSaved: (String value) {
-                      //   _loginData.email = value;
-                      // },
-                    ),
-                  ),
+                TextBox(
+                  textInputType: TextInputType.visiblePassword,
+                  hint: "Password",
                 ),
-                Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Container(
-                    color: Colors.transparent,
-                    width: MediaQuery.of(context).size.width,
-                    height: 50,
-                    child: FlatButton(
-                      shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(15.0),
-                      ),
-                      onPressed: () {},
-                      color: Color(0xFF49C9C4),
-                      child: Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Raleway',
-                          fontSize: 22.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                Button(
+                    buttonName: "Sign Up",
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => HomePage(),
+                          ));
+                    }),
               ],
             ),
           ),

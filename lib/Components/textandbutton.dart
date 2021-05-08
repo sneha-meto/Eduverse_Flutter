@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 
 class TextBox extends StatefulWidget {
-
   final TextInputType textInputType;
   final String hint;
 
-  TextBox({
-    this.textInputType,
-    this.hint
-  });
+  TextBox({this.textInputType, this.hint});
 
   @override
   _TextBoxState createState() => _TextBoxState();
@@ -22,13 +18,14 @@ class _TextBoxState extends State<TextBox> {
       child: Container(
         height: 50.0,
         child: TextFormField(
+          style: TextStyle(color: Colors.white),
           keyboardType: widget.textInputType,
           autofocus: false,
           decoration: InputDecoration(
             hintText: widget.hint,
+            hintStyle: TextStyle(color: Colors.grey),
             // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-            enabledBorder:
-            OutlineInputBorder(
+            enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15.0),
               borderSide: BorderSide(color: Color(0xFF54ABD0), width: 2),
             ),
@@ -47,14 +44,11 @@ class _TextBoxState extends State<TextBox> {
   }
 }
 
-
 class Button extends StatefulWidget {
-
   final String buttonName;
+  final Function onTap;
 
-  Button({
-    this.buttonName
-  });
+  Button({this.buttonName, this.onTap});
 
   @override
   _ButtonState createState() => _ButtonState();
@@ -64,7 +58,7 @@ class _ButtonState extends State<Button> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(10.0),
+      padding: EdgeInsets.all(5),
       child: Container(
         color: Colors.transparent,
         width: MediaQuery.of(context).size.width,
@@ -73,7 +67,7 @@ class _ButtonState extends State<Button> {
           shape: new RoundedRectangleBorder(
             borderRadius: new BorderRadius.circular(15.0),
           ),
-          onPressed: () {},
+          onPressed: widget.onTap,
           color: Color(0xFF49C9C4),
           child: Text(
             widget.buttonName,
@@ -88,4 +82,3 @@ class _ButtonState extends State<Button> {
     );
   }
 }
-

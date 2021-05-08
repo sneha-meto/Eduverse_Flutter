@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:eduverse/Pages/main_page.dart';
 import 'package:eduverse/Pages/onboarding.dart';
 import 'package:eduverse/Pages/login.dart';
+import 'package:flutter/services.dart';
 
 void main() {
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(MyApp());
 }
 
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Color(0xff2A2D41),
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      home: LaunchScreen(),
     );
   }
 }

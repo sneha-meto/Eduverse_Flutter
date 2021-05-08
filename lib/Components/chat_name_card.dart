@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:eduverse/Pages/chat_screen.dart';
+import 'package:eduverse/constants.dart';
 
 class ChatNameCard extends StatelessWidget {
   const ChatNameCard({@required this.name});
@@ -29,7 +30,7 @@ class ChatNameCard extends StatelessWidget {
               height: 50,
               margin: EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.red,
+                color: kCyan,
                 borderRadius: BorderRadius.circular(10),
                 shape: BoxShape.rectangle,
                 // image: DecorationImage(

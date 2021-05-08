@@ -14,6 +14,12 @@ class InboxWidget extends StatelessWidget {
           'Inbox',
           style: TextStyle(fontSize: 25),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {},
+          ),
+        ],
         titleSpacing: 0,
         elevation: 0,
       ),

@@ -4,6 +4,7 @@ import 'package:bubble/bubble.dart';
 import 'package:flutter/rendering.dart';
 import 'package:eduverse/Pages/share.dart';
 import 'package:eduverse/constants.dart';
+import 'package:eduverse/constants.dart';
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -29,7 +30,7 @@ class _ChatScreenState extends State<ChatScreen> {
               height: 38,
               margin: EdgeInsets.only(right: 20),
               decoration: BoxDecoration(
-                color: Colors.red,
+                color: kCyan,
                 borderRadius: BorderRadius.circular(11),
                 shape: BoxShape.rectangle,
                 // image: DecorationImage(
