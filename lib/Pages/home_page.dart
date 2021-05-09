@@ -9,6 +9,8 @@ import 'package:eduverse/Components/add_task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:eduverse/Utils/subjects.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:eduverse/Pages/login.dart';
 
 class HomeWidget extends StatelessWidget {
   const HomeWidget({
@@ -61,7 +63,18 @@ class HomeWidget extends StatelessWidget {
                   Icons.exit_to_app,
                   color: Colors.white,
                 ),
-                onPressed: () {}),
+                onPressed: () {
+                  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+                  Future<void> _signOut() async {
+                    await _auth.signOut();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) => Login(),
+                        ));
+                  }
+                }),
           )
         ],
       ),
