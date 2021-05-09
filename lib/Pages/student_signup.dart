@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:eduverse/Components/textandbutton.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:eduverse/Pages/main_page.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
+
 
 class Student extends StatefulWidget {
   @override
@@ -18,7 +21,6 @@ class _StudentState extends State<Student> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _firstname = TextEditingController();
   final TextEditingController _lastname = TextEditingController();
-  final TextEditingController _branch = TextEditingController();
   final TextEditingController _registerno = TextEditingController();
   final TextEditingController _phone = TextEditingController();
   final TextEditingController _year = TextEditingController();
@@ -156,7 +158,26 @@ class _StudentState extends State<Student> {
                       onTap: () async{
 
                         if (_formKey.currentState.validate()) {
-                          await _register();
+                          await _registerStudent();
+                          print(_auth.currentUser.uid);
+                          print(_firstname.text);
+                          // print(_designation);
+
+                          final firestoreInstance = FirebaseFirestore.instance;
+                          firestoreInstance.collection("students").doc(_auth.currentUser.uid).set(
+                             {
+                                'first_name': _firstname.text,
+                                'last_name': _lastname.text,
+                                'email' : _emailController.text,
+                                'register_number': _registerno.text,
+                                'branch' : _chosenValue,
+                                'graduating_year' : _year.text,
+                                'phone' : _phone.text,
+                                'password' : _passwordController.text,
+                                'role' : "student",
+                              }).then((_){
+                            print("success!");
+                          });
 
                           Navigator.push(
                               context,
@@ -183,7 +204,7 @@ class _StudentState extends State<Student> {
   }
 
   // Example code for registration.
-  Future<void> _register() async {
+  Future<void> _registerStudent() async {
     final User user = (await _auth.createUserWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
@@ -200,3 +221,4 @@ class _StudentState extends State<Student> {
   }
 
 }
+
