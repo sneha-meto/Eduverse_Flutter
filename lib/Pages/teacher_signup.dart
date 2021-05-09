@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:eduverse/Components/textandbutton.dart';
 import 'package:eduverse/Pages/login.dart';
-
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'main_page.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
+final firestoreInstance = FirebaseFirestore.instance;
 
 class Teacher extends StatefulWidget {
   @override
@@ -120,10 +122,6 @@ class _TeacherState extends State<Teacher> {
                             items: <String>[
                               'IT',
                               'CS',
-                              'CIVIL',
-                              'MECHANICAL',
-                              'FIRE & SAFETY',
-                              'ELECTRICAL',
                               'ELECTRONICS',
                             ].map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
@@ -215,6 +213,18 @@ class _TeacherState extends State<Teacher> {
 
                         if (_formKey.currentState.validate()) {
                           await _register();
+                          firestoreInstance.collection("Users").doc(_auth.currentUser.uid).set(
+                              {
+                                'First Name': _firstname.text,
+                                'Last Name': _lastname.text,
+                                'Official Email' : _emailController.text,
+                                'Branch' : _chosenValue,
+                                'Designation' : _designation,
+                                'Phone' : _phone.text,
+                                'Password' : _passwordController.text,
+                              }).then((_){
+                            print("success!");
+                          });
 
                           Navigator.push(
                               context,
@@ -247,6 +257,21 @@ class _TeacherState extends State<Teacher> {
     ))
         .user;
     if (user != null) {
+
+
+
+
+      // users.add({
+      //   'First Name': _firstname,
+      //   'Last Name': _lastname,
+      //   'Official Email' : _emailController,
+      //   'Branch' : _chosenValue,
+      //   'Designation' : _designation,
+      //   'Phone' : _phone,
+      //   'Password' : _passwordController,
+      // }).then((_){
+      //   print("success!");
+      // });
     setState(() {
     _success = true;
     _userEmail = user.email;

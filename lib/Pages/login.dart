@@ -1,4 +1,5 @@
 import 'package:eduverse/Pages/main_page.dart';
+import 'package:eduverse/Pages/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:eduverse/Components/textandbutton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -93,8 +94,42 @@ class _LoginState extends State<Login> {
                         }
 
                       }
-                  )
-
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30.0,horizontal: 10.0),
+                    child: Center(
+                      child: Container(
+                          child: Row(
+                            children: <Widget>[
+                              Text(
+                                "Don't have account?",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 18.0,
+                                ),
+                              ),
+                              FlatButton(
+                                textColor: Color(0xFF55ACD1),
+                                child: Text(
+                                  'Sign Up',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                onPressed: () {
+                                  //signup screen
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) => LaunchScreen(),
+                                      ));
+                                },
+                              )
+                            ],
+                            mainAxisAlignment: MainAxisAlignment.center,
+                          )),
+                    ),
+                  ),
                 ],
               ),
             ),

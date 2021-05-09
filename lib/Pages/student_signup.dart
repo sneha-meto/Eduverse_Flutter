@@ -111,10 +111,6 @@ class _StudentState extends State<Student> {
                             items: <String>[
                               'IT',
                               'CS',
-                              'CIVIL',
-                              'MECHANICAL',
-                              'FIRE & SAFETY',
-                              'ELECTRICAL',
                               'ELECTRONICS',
                             ].map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
