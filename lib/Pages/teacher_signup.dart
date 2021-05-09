@@ -8,7 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main_page.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-final firestoreInstance = FirebaseFirestore.instance;
+
 
 class Teacher extends StatefulWidget {
   @override
@@ -213,15 +213,21 @@ class _TeacherState extends State<Teacher> {
 
                         if (_formKey.currentState.validate()) {
                           await _register();
-                          firestoreInstance.collection("Users").doc(_auth.currentUser.uid).set(
+                          print(_auth.currentUser.uid);
+                          print(_firstname.text);
+                          print(_designation);
+
+                          final firestoreInstance = FirebaseFirestore.instance;
+                          firestoreInstance.collection("teachers").doc(_auth.currentUser.uid).set(
                               {
-                                'First Name': _firstname.text,
-                                'Last Name': _lastname.text,
-                                'Official Email' : _emailController.text,
-                                'Branch' : _chosenValue,
-                                'Designation' : _designation,
-                                'Phone' : _phone.text,
-                                'Password' : _passwordController.text,
+                                'first_name': _firstname.text,
+                                'last_name': _lastname.text,
+                                'email' : _emailController.text,
+                                'branch' : _chosenValue,
+                                'designation' : _designation,
+                                'phone' : _phone.text,
+                                'password' : _passwordController.text,
+                                'role' : "teacher",
                               }).then((_){
                             print("success!");
                           });
@@ -257,21 +263,6 @@ class _TeacherState extends State<Teacher> {
     ))
         .user;
     if (user != null) {
-
-
-
-
-      // users.add({
-      //   'First Name': _firstname,
-      //   'Last Name': _lastname,
-      //   'Official Email' : _emailController,
-      //   'Branch' : _chosenValue,
-      //   'Designation' : _designation,
-      //   'Phone' : _phone,
-      //   'Password' : _passwordController,
-      // }).then((_){
-      //   print("success!");
-      // });
     setState(() {
     _success = true;
     _userEmail = user.email;
