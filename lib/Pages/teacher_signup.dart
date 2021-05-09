@@ -8,7 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main_page.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-final firestoreInstance = FirebaseFirestore.instance;
+
 
 class Teacher extends StatefulWidget {
   @override
@@ -212,18 +212,6 @@ class _TeacherState extends State<Teacher> {
                       onTap: () async {
                         if (_formKey.currentState.validate()) {
                           await _register();
-                          firestoreInstance
-                              .collection("Users")
-                              .doc(_auth.currentUser.uid)
-                              .set({
-                            'First Name': _firstname.text,
-                            'Last Name': _lastname.text,
-                            'Official Email': _emailController.text,
-                            'Branch': _chosenValue,
-                            'Designation': _designation,
-                            'Phone': _phone.text,
-                            'Password': _passwordController.text,
-                          }).then((_) {
                             print("success!");
                           });
 
@@ -259,26 +247,7 @@ class _TeacherState extends State<Teacher> {
     ))
         .user;
     if (user != null) {
-      setState(() {
-        _success = true;
-        _userEmail = user.email;
-      });
 
-      // users.add({
-      //   'First Name': _firstname,
-      //   'Last Name': _lastname,
-      //   'Official Email' : _emailController,
-      //   'Branch' : _chosenValue,
-      //   'Designation' : _designation,
-      //   'Phone' : _phone,
-      //   'Password' : _passwordController,
-      // }).then((_){
-      //   print("success!");
-      // });
-      setState(() {
-        _success = true;
-        _userEmail = user.email;
-      });
     } else {
       _success = false;
     }
