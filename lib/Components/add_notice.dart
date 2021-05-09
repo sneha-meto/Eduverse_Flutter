@@ -1,7 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:eduverse/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddNotice extends StatelessWidget {
+  String noticeText;
+  FirebaseFirestore db = FirebaseFirestore.instance;
+
+  void submitNotice() {
+    db.collection("notices").add({
+      "branch": "it",
+      "created": DateTime.now(),
+      "faculty": "Sherlock Holmes",
+      "notice": noticeText
+    }).then((value) {
+      print(value.id);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,7 +51,9 @@ class AddNotice extends StatelessWidget {
                   padding: EdgeInsets.all(15.0),
                   child: SingleChildScrollView(
                     child: TextField(
-                      onChanged: (val) {},
+                      onChanged: (val) {
+                        noticeText = val;
+                      },
                       maxLength: 300,
                       maxLines: 6,
                       style: TextStyle(color: Colors.white),
@@ -53,23 +70,29 @@ class AddNotice extends StatelessWidget {
                 SizedBox(
                   height: 15,
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Center(
-                      child: Text(
-                    "Submit",
-                    style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  )),
-                  decoration: BoxDecoration(boxShadow: [
-                    BoxShadow(
-                        offset: Offset(1, 1),
-                        blurRadius: 4,
-                        color: Colors.black54)
-                  ], color: kCyan, borderRadius: BorderRadius.circular(10)),
+                InkWell(
+                  onTap: () {
+                    submitNotice();
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Center(
+                        child: Text(
+                      "Submit",
+                      style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                    )),
+                    decoration: BoxDecoration(boxShadow: [
+                      BoxShadow(
+                          offset: Offset(1, 1),
+                          blurRadius: 4,
+                          color: Colors.black54)
+                    ], color: kCyan, borderRadius: BorderRadius.circular(10)),
+                  ),
                 )
               ],
             ),

@@ -159,40 +159,29 @@ class HomeWidget extends StatelessWidget {
                         SizedBox(
                           height: 5,
                         ),
-                        Flexible(
-                          child: ListView.builder(
-                              itemCount: data.notices.length,
-                              itemBuilder: (context, i) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8.0, horizontal: 0),
-                                  child: Container(
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(data.notices[i].facultyName,
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                              Text(data.notices[i].date)
-                                            ],
-                                          ),
-                                          Text(data.notices[i].noticeText)
-                                        ]),
-                                    padding: EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.5),
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                  ),
+                        StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection("notices")
+                                .where("branch", isEqualTo: "it")
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Text(
+                                  'No Data...',
                                 );
-                              }),
-                        )
+                              } else {
+                                print(snapshot.data.docs[0]);
+                                var notices = snapshot.data.docs;
+
+                                return Flexible(
+                                  child: ListView.builder(
+                                      itemCount: notices.length,
+                                      itemBuilder: (context, i) {
+                                        return NoticeTile(notice: notices[i]);
+                                      }),
+                                );
+                              }
+                            }),
                       ],
                     ),
                     Column(
@@ -240,40 +229,31 @@ class HomeWidget extends StatelessWidget {
                         SizedBox(
                           height: 5,
                         ),
-                        Flexible(
-                          child: ListView.builder(
-                              itemCount: data.tasks.length,
-                              itemBuilder: (context, i) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8.0, horizontal: 0),
-                                  child: Container(
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(data.tasks[i].facultyName,
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                              Text(data.tasks[i].due)
-                                            ],
-                                          ),
-                                          Text(data.tasks[i].task)
-                                        ]),
-                                    padding: EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.5),
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                  ),
+                        StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection("tasks")
+                                .where("branch", isEqualTo: "it")
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Text(
+                                  'No Data...',
                                 );
-                              }),
-                        )
+                              } else {
+                                print(snapshot.data.docs[0]);
+                                var tasks = snapshot.data.docs;
+
+                                return Flexible(
+                                  child: ListView.builder(
+                                      itemCount: tasks.length,
+                                      itemBuilder: (context, i) {
+                                        return TaskTile(
+                                          task: tasks[i],
+                                        );
+                                      }),
+                                );
+                              }
+                            })
                       ],
                     ),
                     Column(
@@ -372,6 +352,64 @@ class HomeWidget extends StatelessWidget {
             ],
           ))
     ]);
+  }
+}
+
+class TaskTile extends StatelessWidget {
+  TaskTile({this.task});
+  var task;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
+      child: Container(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(task["faculty"],
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(DateFormat("dd-MM-yy").format(task["due"].toDate()))
+            ],
+          ),
+          Text(task["task"])
+        ]),
+        padding: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+}
+
+class NoticeTile extends StatelessWidget {
+  NoticeTile({this.notice});
+  var notice;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
+      child: Container(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(notice["faculty"],
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(
+                  '${DateFormat("h:mma").format(notice["created"].toDate())}, ${DateFormat("dd-MM-yy").format(notice["created"].toDate())}'),
+            ],
+          ),
+          Text(notice["notice"])
+        ]),
+        padding: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(10)),
+      ),
+    );
   }
 }
 

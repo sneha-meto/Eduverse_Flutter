@@ -186,8 +186,7 @@ class _TeacherState extends State<Teacher> {
                   ),
                   Button(
                       buttonName: "Sign Up",
-                      onTap: () async{
-
+                      onTap: () async {
                         if (_formKey.currentState.validate()) {
                           await _register();
 
@@ -206,28 +205,29 @@ class _TeacherState extends State<Teacher> {
       ),
     );
   }
-    @override
-    void dispose() {
+
+  @override
+  void dispose() {
     // Clean up the controller when the Widget is disposed
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-    }
+  }
 
-    // Example code for registration.
-    Future<void> _register() async {
+  // Example code for registration.
+  Future<void> _register() async {
     final User user = (await _auth.createUserWithEmailAndPassword(
-    email: _emailController.text,
-    password: _passwordController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
     ))
         .user;
     if (user != null) {
-    setState(() {
-    _success = true;
-    _userEmail = user.email;
-    });
+      setState(() {
+        _success = true;
+        _userEmail = user.email;
+      });
     } else {
-    _success = false;
+      _success = false;
     }
-    }
+  }
 }

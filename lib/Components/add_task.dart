@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:eduverse/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddTask extends StatefulWidget {
   @override
@@ -8,8 +9,9 @@ class AddTask extends StatefulWidget {
 
 class _AddTaskState extends State<AddTask> {
   DateTime _dueDate = DateTime.now();
-
   String _dateText = '';
+  String taskText;
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
   Future<Null> _selectDueDate(BuildContext context) async {
     final picked = await showDatePicker(
@@ -23,6 +25,17 @@ class _AddTaskState extends State<AddTask> {
         _dateText = '${picked.day}-${picked.month}-${picked.year}';
       });
     }
+  }
+
+  void submitTask() {
+    db.collection("tasks").add({
+      "branch": "it",
+      "due": _dueDate,
+      "faculty": "Sherlock Holmes",
+      "task": taskText
+    }).then((value) {
+      print(value.id);
+    });
   }
 
   @override
@@ -65,7 +78,9 @@ class _AddTaskState extends State<AddTask> {
                   padding: EdgeInsets.all(15.0),
                   child: SingleChildScrollView(
                     child: TextField(
-                      onChanged: (val) {},
+                      onChanged: (val) {
+                        taskText = val;
+                      },
                       maxLength: 50,
                       maxLines: 2,
                       style: TextStyle(color: Colors.white),
@@ -106,23 +121,29 @@ class _AddTaskState extends State<AddTask> {
                 SizedBox(
                   height: 15,
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Center(
-                      child: Text(
-                    "Submit",
-                    style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  )),
-                  decoration: BoxDecoration(boxShadow: [
-                    BoxShadow(
-                        offset: Offset(1, 1),
-                        blurRadius: 4,
-                        color: Colors.black54)
-                  ], color: kBlue, borderRadius: BorderRadius.circular(10)),
+                InkWell(
+                  onTap: () {
+                    submitTask();
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Center(
+                        child: Text(
+                      "Submit",
+                      style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                    )),
+                    decoration: BoxDecoration(boxShadow: [
+                      BoxShadow(
+                          offset: Offset(1, 1),
+                          blurRadius: 4,
+                          color: Colors.black54)
+                    ], color: kBlue, borderRadius: BorderRadius.circular(10)),
+                  ),
                 )
               ],
             ),
