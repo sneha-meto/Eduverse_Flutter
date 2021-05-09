@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class TextBox extends StatefulWidget {
   final TextInputType textInputType;
   final String hint;
+  final TextEditingController controller;
 
-  TextBox({this.textInputType, this.hint});
+  TextBox({this.textInputType, this.hint, this.controller});
 
   @override
   _TextBoxState createState() => _TextBoxState();
@@ -21,13 +22,17 @@ class _TextBoxState extends State<TextBox> {
           style: TextStyle(color: Colors.white),
           keyboardType: widget.textInputType,
           autofocus: false,
+          controller: widget.controller,
           decoration: InputDecoration(
             hintText: widget.hint,
             hintStyle: TextStyle(color: Colors.grey),
             // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15.0),
-              borderSide: BorderSide(color: Color(0xFF54ABD0), width: 2),
+              borderSide: BorderSide(
+                  color: Color(0xFF54ABD0),
+                  width: 2,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15.0),
@@ -37,6 +42,7 @@ class _TextBoxState extends State<TextBox> {
           validator: (value) {
             if (value.isEmpty) {
               return 'This field is required';
+
             }
             return null;
           },
