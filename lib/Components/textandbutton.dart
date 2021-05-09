@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class TextBox extends StatefulWidget {
   final TextInputType textInputType;
   final String hint;
+  final TextEditingController controller;
 
-  TextBox({this.textInputType, this.hint});
+  TextBox({this.textInputType, this.hint, this.controller});
 
   @override
   _TextBoxState createState() => _TextBoxState();
@@ -21,6 +22,7 @@ class _TextBoxState extends State<TextBox> {
           style: TextStyle(color: Colors.white),
           keyboardType: widget.textInputType,
           autofocus: false,
+          controller: widget.controller,
           decoration: InputDecoration(
             hintText: widget.hint,
             hintStyle: TextStyle(color: Colors.grey),

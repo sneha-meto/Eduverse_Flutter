@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:eduverse/Components/textandbutton.dart';
+import 'package:eduverse/Pages/login.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -16,6 +17,11 @@ class _TeacherState extends State<Teacher> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _firstname = TextEditingController();
+  final TextEditingController _lastname = TextEditingController();
+  final TextEditingController _branch = TextEditingController();
+  final TextEditingController _position = TextEditingController();
+  final TextEditingController _phone = TextEditingController();
   String _chosenValue;
   String _designation;
   bool _success;
@@ -48,6 +54,20 @@ class _TeacherState extends State<Teacher> {
                       ),
                     ),
                   ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Respond to button press
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) => Login(),
+                            ));
+                      },
+                      child: Text("Sign In"),
+                    ),
+                  ),
                   Padding(
                     padding: EdgeInsets.all(20.0),
                     child: Center(
@@ -65,14 +85,17 @@ class _TeacherState extends State<Teacher> {
                   TextBox(
                     textInputType: TextInputType.name,
                     hint: "First Name",
+                    controller: _firstname,
                   ),
                   TextBox(
                     textInputType: TextInputType.name,
                     hint: "Last Name",
+                    controller: _lastname,
                   ),
                   TextBox(
                     textInputType: TextInputType.emailAddress,
                     hint: "Official Email",
+                    controller: _emailController,
                   ),
                   Padding(
                     padding: EdgeInsets.all(5.0),
@@ -179,10 +202,12 @@ class _TeacherState extends State<Teacher> {
                   TextBox(
                     textInputType: TextInputType.number,
                     hint: "Phone Number",
+                    controller: _phone,
                   ),
                   TextBox(
                     textInputType: TextInputType.visiblePassword,
                     hint: "Password",
+                    controller: _passwordController,
                   ),
                   Button(
                       buttonName: "Sign Up",
