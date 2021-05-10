@@ -160,8 +160,6 @@ class _StudentState extends State<Student> {
                         if (_formKey.currentState.validate()) {
                           await _registerStudent();
                           print(_auth.currentUser.uid);
-                          print(_firstname.text);
-                          // print(_designation);
 
                           final firestoreInstance = FirebaseFirestore.instance;
                           firestoreInstance.collection("students").doc(_auth.currentUser.uid).set(

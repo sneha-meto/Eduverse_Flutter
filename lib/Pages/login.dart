@@ -15,6 +15,7 @@ class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   var alertStyle = AlertStyle(
+
     overlayColor: Colors.transparent,
     animationType: AnimationType.fromTop,
     isCloseButton: false,
@@ -22,7 +23,7 @@ class _LoginState extends State<Login> {
     descStyle: TextStyle(fontWeight: FontWeight.bold),
     animationDuration: Duration(milliseconds: 400),
     alertBorder: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(50.0),
+      borderRadius: BorderRadius.circular(60.0),
       side: BorderSide(
         color: Colors.grey,
       ),

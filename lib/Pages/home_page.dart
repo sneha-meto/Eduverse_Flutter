@@ -12,7 +12,11 @@ import 'package:eduverse/Utils/subjects.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:eduverse/Pages/login.dart';
 
+final FirebaseAuth _auth = FirebaseAuth.instance;
+
 class HomeWidget extends StatelessWidget {
+
+
   const HomeWidget({
     Key key,
   }) : super(key: key);
@@ -63,17 +67,17 @@ class HomeWidget extends StatelessWidget {
                   Icons.exit_to_app,
                   color: Colors.white,
                 ),
-                onPressed: () {
-                  final FirebaseAuth _auth = FirebaseAuth.instance;
+                onPressed: ()  {
+
 
                   Future<void> _signOut() async {
-                    await _auth.signOut();
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) => Login(),
-                        ));
+                    return _auth.signOut();
                   }
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => Login(),
+                      ));
                 }),
           )
         ],
@@ -495,3 +499,4 @@ class ScheduleCard extends StatelessWidget {
     );
   }
 }
+

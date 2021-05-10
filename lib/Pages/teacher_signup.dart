@@ -21,8 +21,6 @@ class _TeacherState extends State<Teacher> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _firstname = TextEditingController();
   final TextEditingController _lastname = TextEditingController();
-  final TextEditingController _branch = TextEditingController();
-  final TextEditingController _position = TextEditingController();
   final TextEditingController _phone = TextEditingController();
   String _chosenValue;
   String _designation;
@@ -209,9 +207,25 @@ class _TeacherState extends State<Teacher> {
                   ),
                   Button(
                       buttonName: "Sign Up",
-                      onTap: () async {
+                      onTap: () async{
+
                         if (_formKey.currentState.validate()) {
                           await _register();
+                          print(_auth.currentUser.uid);
+
+
+                          final firestoreInstance = FirebaseFirestore.instance;
+                          firestoreInstance.collection("teachers").doc(_auth.currentUser.uid).set(
+                              {
+                                'first_name': _firstname.text,
+                                'last_name': _lastname.text,
+                                'email' : _emailController.text,
+                                'branch' : _chosenValue,
+                                'designation' : _designation,
+                                'phone' : _phone.text,
+                                'password' : _passwordController.text,
+                                'role' : "teacher",
+                              }).then((_){
                             print("success!");
                           });
 
@@ -230,26 +244,28 @@ class _TeacherState extends State<Teacher> {
       ),
     );
   }
-
-  @override
-  void dispose() {
+    @override
+    void dispose() {
     // Clean up the controller when the Widget is disposed
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
+    }
 
-  // Example code for registration.
-  Future<void> _register() async {
+    // Example code for registration.
+    Future<void> _register() async {
     final User user = (await _auth.createUserWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
+    email: _emailController.text,
+    password: _passwordController.text,
     ))
         .user;
     if (user != null) {
-
+    setState(() {
+    _success = true;
+    _userEmail = user.email;
+    });
     } else {
-      _success = false;
+    _success = false;
     }
-  }
+    }
 }
