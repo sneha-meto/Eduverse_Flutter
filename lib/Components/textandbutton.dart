@@ -21,11 +21,18 @@ class _TextBoxState extends State<TextBox> {
         child: TextFormField(
           style: TextStyle(color: Colors.white),
           keyboardType: widget.textInputType,
-          autofocus: false,
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'This field is required';
+
+            }
+            return null;
+          },
+          // autofocus: true,
           controller: widget.controller,
           decoration: InputDecoration(
             hintText: widget.hint,
-            hintStyle: TextStyle(color: Colors.grey),
+            hintStyle: TextStyle(color: Colors.white70),
             // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15.0),
@@ -39,13 +46,6 @@ class _TextBoxState extends State<TextBox> {
               borderSide: BorderSide(color: Color(0xFF54ABD0), width: 2),
             ),
           ),
-          validator: (value) {
-            if (value.isEmpty) {
-              return 'This field is required';
-
-            }
-            return null;
-          },
         ),
       ),
     );
