@@ -54,20 +54,6 @@ class _TeacherState extends State<Teacher> {
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Respond to button press
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext context) => Login(),
-                            ));
-                      },
-                      child: Text("Sign In"),
-                    ),
-                  ),
                   Padding(
                     padding: EdgeInsets.all(20.0),
                     child: Center(
@@ -229,11 +215,22 @@ class _TeacherState extends State<Teacher> {
                             print("success!");
                           });
 
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) => HomePage(),
-                              ));
+                          firestoreInstance.collection("users").doc(_auth.currentUser.uid).set(
+                              {
+
+                                'role' : "teacher",
+                              }).then((_){
+                            print("users success!");
+                          });
+
+                          Navigator.of(context).pushReplacement(
+                              new MaterialPageRoute(builder: (context) => HomePage()));
+
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (BuildContext context) => HomePage(),
+                          //     ));
                         }
                       }),
                 ],

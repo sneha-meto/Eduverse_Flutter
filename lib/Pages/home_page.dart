@@ -17,6 +17,8 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 class HomeWidget extends StatelessWidget {
 
 
+
+
   const HomeWidget({
     Key key,
   }) : super(key: key);
@@ -71,13 +73,21 @@ class HomeWidget extends StatelessWidget {
 
 
                   Future<void> _signOut() async {
+                    print(_auth.currentUser.uid);
                     return _auth.signOut();
                   }
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => Login(),
-                      ));
+
+                  _signOut();
+
+                  Navigator.of(context).pushReplacement(
+                    new MaterialPageRoute(builder: (context) => Login()));
+
+
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (BuildContext context) => Login(),
+                  //     ));
                 }),
           )
         ],
