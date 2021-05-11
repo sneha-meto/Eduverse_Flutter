@@ -24,7 +24,6 @@ class _TextBoxState extends State<TextBox> {
           validator: (value) {
             if (value.isEmpty) {
               return 'This field is required';
-
             }
             return null;
           },
@@ -37,8 +36,8 @@ class _TextBoxState extends State<TextBox> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15.0),
               borderSide: BorderSide(
-                  color: Color(0xFF54ABD0),
-                  width: 2,
+                color: Color(0xFF54ABD0),
+                width: 2,
               ),
             ),
             focusedBorder: OutlineInputBorder(

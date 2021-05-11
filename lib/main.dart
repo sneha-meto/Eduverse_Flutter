@@ -6,12 +6,17 @@ import 'package:eduverse/Pages/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 
 void main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(DevicePreview(
+//      enabled: !kReleaseMode,
+      enabled: false,
+      builder: (context) => MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -21,6 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Eduverse',
       theme: ThemeData(
+        fontFamily: "Roboto",
         appBarTheme: AppBarTheme(backgroundColor: Colors.transparent),
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
