@@ -4,13 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:eduverse/Components/textandbutton.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
+User firebaseUser = FirebaseAuth.instance.currentUser;
 
 class Login extends StatefulWidget {
+
   @override
   _LoginState createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
+
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -32,6 +39,9 @@ class _LoginState extends State<Login> {
       color: Color(0xFF54ABD0),
     ),
   );
+  @override
+
+
   @override
   Widget build(BuildContext context) {
     return  Form(
@@ -92,19 +102,25 @@ class _LoginState extends State<Login> {
                       buttonName: "Sign In",
                       onTap: () async {
                         try {
+
+                        if (_formKey.currentState.validate()) {
                           User user =
-                          (await FirebaseAuth.instance.signInWithEmailAndPassword(
-                          email: _emailController.text,
-                              password: _passwordController.text,
-                          ))
-                            .user;
-                        if (user != null) {
-                        Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                        builder: (BuildContext context) => HomePage(),
-                        ));
+                              (await FirebaseAuth.instance.signInWithEmailAndPassword(
+                                email: _emailController.text,
+                                password: _passwordController.text,
+                              ))
+                                  .user;
+                          if (user != null) {
+                            Navigator.of(context).pushReplacement(
+                                new MaterialPageRoute(builder: (context) => HomePage()));
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (BuildContext context) => HomePage(),
+                            //     ));
+                          }
                         }
+
                         } catch (e) {
                         print(e);
                         Alert(
@@ -153,12 +169,15 @@ class _LoginState extends State<Login> {
                                   'Sign Up',
                                   style: TextStyle(fontSize: 20),
                                 ),
-                                onPressed: () {
+                                onPressed: () async{
                                   //signup screen
+                                  var prefs = await SharedPreferences.getInstance();
+                                  var boolKey = 'isFirstTime';
+                                  var isFirstTime = prefs.getBool(boolKey) ?? true;
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (BuildContext context) => LaunchScreen(),
+                                        builder: (BuildContext context) => LaunchScreen(prefs, boolKey),
                                       ));
                                 },
                               )

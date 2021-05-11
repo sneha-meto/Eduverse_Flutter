@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:eduverse/constants.dart';
 import 'package:eduverse/Pages/teacher_signup.dart';
 import 'package:eduverse/Pages/student_signup.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LaunchScreen extends StatelessWidget {
+  final SharedPreferences prefs;
+  final String boolKey;
+  LaunchScreen(this.prefs, this.boolKey);
   @override
   Widget build(BuildContext context) {
+    prefs.setBool(boolKey, false);
     double fullHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Color(0XFF2A2D41),
@@ -42,6 +47,8 @@ class LaunchScreen extends StatelessWidget {
                   image: "assets/images/faculty.png",
                   title: 'Faculty',
                   onTap: () {
+                    // Navigator.of(context).pushReplacement(
+                    //     new MaterialPageRoute(builder: (context) => Teacher()));
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -56,6 +63,8 @@ class LaunchScreen extends StatelessWidget {
                   image: "assets/images/student.png",
                   title: 'Student',
                   onTap: () {
+                    // Navigator.of(context).pushReplacement(
+                    //     new MaterialPageRoute(builder: (context) => Student()));
                     Navigator.push(
                         context,
                         MaterialPageRoute(

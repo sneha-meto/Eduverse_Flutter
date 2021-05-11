@@ -15,36 +15,49 @@ class _TextBoxState extends State<TextBox> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(5.0),
-      child: Container(
-        height: 50.0,
-        child: TextFormField(
-          style: TextStyle(color: Colors.white),
-          keyboardType: widget.textInputType,
-          validator: (value) {
-            if (value.isEmpty) {
-              return 'This field is required';
+      padding: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+      child: TextFormField(
+        obscureText: false,
+        autocorrect: false,
+        style: TextStyle(color: Colors.white),
+        keyboardType: widget.textInputType,
+        validator: (value) {
+          if (value.isEmpty) {
+            return 'This field is required';
 
-            }
-            return null;
-          },
-          // autofocus: true,
-          controller: widget.controller,
-          decoration: InputDecoration(
-            hintText: widget.hint,
-            hintStyle: TextStyle(color: Colors.white70),
-            // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15.0),
-              borderSide: BorderSide(
-                  color: Color(0xFF54ABD0),
-                  width: 2,
-              ),
+          }
+          return null;
+        },
+        // autofocus: true,
+        controller: widget.controller,
+        decoration: InputDecoration(
+          hintText: widget.hint,
+          hintStyle: TextStyle(color: Colors.white70),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15.0),
+            borderSide: BorderSide(
+              color: Color(0xFF54ABD0),
+              width: 2,
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15.0),
-              borderSide: BorderSide(color: Color(0xFF54ABD0), width: 2),
+          ),
+          // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15.0),
+            borderSide: BorderSide(
+              color: Color(0xFF54ABD0),
+              width: 2,
             ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15.0),
+            borderSide: BorderSide(
+              color: Color(0xFF54ABD0),
+              width: 2,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15.0),
+            borderSide: BorderSide(color: Color(0xFF54ABD0), width: 2),
           ),
         ),
       ),
