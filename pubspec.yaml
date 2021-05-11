@@ -36,6 +36,8 @@ dependencies:
   firebase_storage: ^8.0.5
   rflutter_alert: ^1.0.2
   device_preview: ^0.7.1
+  shared_preferences: ^2.0.5
+
 
 dev_dependencies:
   flutter_test:

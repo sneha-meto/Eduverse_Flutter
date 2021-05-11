@@ -123,7 +123,7 @@ class HomeWidget extends StatelessWidget {
                           tabBarIndicatorSize: TabBarIndicatorSize.tab,
                           indicatorRadius: 12,
                           insets: EdgeInsets.all(12),
-                          padding: EdgeInsets.all(5)),
+                          padding: EdgeInsets.all(10)),
                       tabs: [
                         HomeTab(
                           text: "Notice\nBoard",
@@ -142,257 +142,251 @@ class HomeWidget extends StatelessWidget {
                 SizedBox(
                   height: 25,
                 ),
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: Container(
-                    padding: EdgeInsets.all(20),
+                Container(
+                  padding: EdgeInsets.all(20),
+
 //                      width: MediaQuery.of(context).size.height * 0.5,
-                    height: MediaQuery.of(context).size.height * 0.55,
-                    decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: TabBarView(
-                      children: [
-                        Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Notice Board",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
+                  height: MediaQuery.of(context).size.height * 0.55,
+                  decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: TabBarView(
+                    children: [
+                      Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Notice Board",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) => AddNotice(),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    ),
+                                    isScrollControlled: true,
+                                    backgroundColor: Color(0xff2A2D41),
+                                  );
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Container(
+                                    child: Icon(Icons.add),
+                                    padding: EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                        color: kCyan,
+                                        borderRadius: BorderRadius.circular(10),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              offset: Offset(1, 1),
+                                              blurRadius: 3,
+                                              color: Colors.black54)
+                                        ]),
+                                  ),
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      builder: (context) => AddNotice(),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0),
-                                      ),
-                                      isScrollControlled: true,
-                                      backgroundColor: Color(0xff2A2D41),
-                                    );
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Container(
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          StreamBuilder(
+                              stream: FirebaseFirestore.instance
+                                  .collection("notices")
+                                  .where("branch", isEqualTo: "it")
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Text(
+                                    'No Data...',
+                                  );
+                                } else {
+                                  print(snapshot.data.docs[0]);
+                                  var notices = snapshot.data.docs;
+
+                                  return Flexible(
+                                    child: ListView.builder(
+                                        itemCount: notices.length,
+                                        itemBuilder: (context, i) {
+                                          return NoticeTile(notice: notices[i]);
+                                        }),
+                                  );
+                                }
+                              }),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Upcoming Tasks",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) => AddTask(),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    ),
+                                    isScrollControlled: true,
+                                    backgroundColor: Color(0xff2A2D41),
+                                  );
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Container(
                                       child: Icon(Icons.add),
                                       padding: EdgeInsets.all(2),
                                       decoration: BoxDecoration(
-                                          color: kCyan,
+                                          color: kBlue,
                                           borderRadius:
                                               BorderRadius.circular(10),
                                           boxShadow: [
                                             BoxShadow(
                                                 offset: Offset(1, 1),
-                                                blurRadius: 3,
+                                                blurRadius: 4,
                                                 color: Colors.black54)
-                                          ]),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            StreamBuilder(
-                                stream: FirebaseFirestore.instance
-                                    .collection("notices")
-                                    .where("branch", isEqualTo: "it")
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Text(
-                                      'No Data...',
-                                    );
-                                  } else {
-                                    print(snapshot.data.docs[0]);
-                                    var notices = snapshot.data.docs;
-
-                                    return Flexible(
-                                      child: ListView.builder(
-                                          itemCount: notices.length,
-                                          itemBuilder: (context, i) {
-                                            return NoticeTile(
-                                                notice: notices[i]);
-                                          }),
-                                    );
-                                  }
-                                }),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Upcoming Tasks",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
+                                          ])),
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      builder: (context) => AddTask(),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0),
-                                      ),
-                                      isScrollControlled: true,
-                                      backgroundColor: Color(0xff2A2D41),
-                                    );
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Container(
-                                        child: Icon(Icons.add),
-                                        padding: EdgeInsets.all(2),
-                                        decoration: BoxDecoration(
-                                            color: kBlue,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  offset: Offset(1, 1),
-                                                  blurRadius: 4,
-                                                  color: Colors.black54)
-                                            ])),
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            StreamBuilder(
-                                stream: FirebaseFirestore.instance
-                                    .collection("tasks")
-                                    .where("branch", isEqualTo: "it")
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Text(
-                                      'No Data...',
-                                    );
-                                  } else {
-                                    print(snapshot.data.docs[0]);
-                                    var tasks = snapshot.data.docs;
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          StreamBuilder(
+                              stream: FirebaseFirestore.instance
+                                  .collection("tasks")
+                                  .where("branch", isEqualTo: "it")
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Text(
+                                    'No Data...',
+                                  );
+                                } else {
+                                  print(snapshot.data.docs[0]);
+                                  var tasks = snapshot.data.docs;
 
-                                    return Flexible(
-                                      child: ListView.builder(
-                                          itemCount: tasks.length,
-                                          itemBuilder: (context, i) {
-                                            return TaskTile(
-                                              task: tasks[i],
-                                            );
-                                          }),
-                                    );
-                                  }
-                                })
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Classes Today",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: Container(
-                                    child: Icon(Icons.edit),
-                                    padding: EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                        color: kPurple,
-                                        borderRadius: BorderRadius.circular(10),
-                                        boxShadow: [
-                                          BoxShadow(
-                                              offset: Offset(1, 1),
-                                              blurRadius: 4,
-                                              color: Colors.black54)
-                                        ]),
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            StreamBuilder(
-                                stream: FirebaseFirestore.instance
-                                    .collection("timetable")
-                                    .doc(getDay())
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Text(
-                                      'No Data...',
-                                    );
-                                  } else {
-                                    print(snapshot.data["it"]);
-                                    var subArray = snapshot.data["it"];
-
-                                    return Flexible(
-                                      child: ListView(children: [
-                                        ScheduleCard(
-                                          time: "09:00 - 10:00",
-                                          sub: subArray[0],
-                                          subFull: subjects[subArray[0]],
-                                        ),
-                                        ScheduleCard(
-                                          time: "10:00 - 11:00",
-                                          sub: subArray[1],
-                                          subFull: subjects[subArray[1]],
-                                        ),
-                                        ScheduleCard(
-                                          time: "11:00 - 12:00",
-                                          sub: subArray[2],
-                                          subFull: subjects[subArray[2]],
-                                        ),
-                                        ScheduleCard(
-                                          time: "12:00 - 13:00",
-                                          sub: "BREAK",
-                                          color: kPurple,
-                                        ),
-                                        ScheduleCard(
-                                          time: "13:00 - 14:00",
-                                          sub: subArray[3],
-                                          subFull: subjects[subArray[3]],
-                                        ),
-                                        ScheduleCard(
-                                          time: "14:00 - 15:00",
-                                          sub: subArray[4],
-                                          subFull: subjects[subArray[4]],
-                                        ),
-                                        ScheduleCard(
-                                          time: "15:00 - 16:00",
-                                          sub: subArray[5],
-                                          subFull: subjects[subArray[5]],
-                                        ),
+                                  return Flexible(
+                                    child: ListView.builder(
+                                        itemCount: tasks.length,
+                                        itemBuilder: (context, i) {
+                                          return TaskTile(
+                                            task: tasks[i],
+                                          );
+                                        }),
+                                  );
+                                }
+                              })
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Classes Today",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Container(
+                                  child: Icon(Icons.edit),
+                                  padding: EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                      color: kPurple,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            offset: Offset(1, 1),
+                                            blurRadius: 4,
+                                            color: Colors.black54)
                                       ]),
-                                    );
-                                  }
-                                })
-                          ],
-                        ),
-                      ],
-                    ),
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          StreamBuilder(
+                              stream: FirebaseFirestore.instance
+                                  .collection("timetable")
+                                  .doc(getDay())
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Text(
+                                    'No Data...',
+                                  );
+                                } else {
+                                  print(snapshot.data["it"]);
+                                  var subArray = snapshot.data["it"];
+
+                                  return Flexible(
+                                    child: ListView(children: [
+                                      ScheduleCard(
+                                        time: "09:00 - 10:00",
+                                        sub: subArray[0],
+                                        subFull: subjects[subArray[0]],
+                                      ),
+                                      ScheduleCard(
+                                        time: "10:00 - 11:00",
+                                        sub: subArray[1],
+                                        subFull: subjects[subArray[1]],
+                                      ),
+                                      ScheduleCard(
+                                        time: "11:00 - 12:00",
+                                        sub: subArray[2],
+                                        subFull: subjects[subArray[2]],
+                                      ),
+                                      ScheduleCard(
+                                        time: "12:00 - 13:00",
+                                        sub: "BREAK",
+                                        color: kPurple,
+                                      ),
+                                      ScheduleCard(
+                                        time: "13:00 - 14:00",
+                                        sub: subArray[3],
+                                        subFull: subjects[subArray[3]],
+                                      ),
+                                      ScheduleCard(
+                                        time: "14:00 - 15:00",
+                                        sub: subArray[4],
+                                        subFull: subjects[subArray[4]],
+                                      ),
+                                      ScheduleCard(
+                                        time: "15:00 - 16:00",
+                                        sub: subArray[5],
+                                        subFull: subjects[subArray[5]],
+                                      ),
+                                    ]),
+                                  );
+                                }
+                              })
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],

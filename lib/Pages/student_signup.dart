@@ -177,11 +177,22 @@ class _StudentState extends State<Student> {
                             print("success!");
                           });
 
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) => HomePage(),
-                              ));
+                          firestoreInstance.collection("users").doc(_auth.currentUser.uid).set(
+                              {
+
+                                'role' : "student",
+                              }).then((_){
+                            print("users success!");
+                          });
+
+                          Navigator.of(context).pushReplacement(
+                              new MaterialPageRoute(builder: (context) => HomePage()));
+
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (BuildContext context) => HomePage(),
+                          //     ));
                         }
                       }),
                 ],
