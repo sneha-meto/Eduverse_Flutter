@@ -1,16 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:eduverse/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AddNotice extends StatelessWidget {
   String noticeText;
   FirebaseFirestore db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String fName;
+  String lName;
+  String branch;
+
+  Future getUserDetail() async {
+    await FirebaseFirestore.instance
+        .collection("teachers")
+        .doc(_auth.currentUser.uid)
+        .get()
+        .then((value) {
+      fName = value.data()["first_name"];
+      lName = value.data()["last_name"];
+      branch = value.data()["branch"].toString().toLowerCase();
+    });
+  }
 
   void submitNotice() {
     db.collection("notices").add({
-      "branch": "it",
+      "branch": branch,
       "created": DateTime.now(),
-      "faculty": "Sherlock Holmes",
+      "faculty": "$fName $lName",
       "notice": noticeText
     }).then((value) {
       print(value.id);
@@ -72,7 +89,8 @@ class AddNotice extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    submitNotice();
+                    getUserDetail().then((value) => submitNotice());
+
                     Navigator.pop(context);
                   },
                   child: Container(

@@ -15,10 +15,6 @@ import 'package:eduverse/Pages/login.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class HomeWidget extends StatelessWidget {
-  const HomeWidget({
-    Key key,
-  }) : super(key: key);
-
   String getDay() {
     var day =
         DateFormat('EEEE').format(DateTime.now()).toLowerCase().substring(0, 3);
@@ -29,7 +25,7 @@ class HomeWidget extends StatelessWidget {
       return day;
   }
 
-  Future<String> getName() async {
+  Future getName() async {
     String role;
     String name;
     await FirebaseFirestore.instance
@@ -38,18 +34,24 @@ class HomeWidget extends StatelessWidget {
         .get()
         .then((value) {
       role = value.data()["role"] + "s";
-      FirebaseFirestore.instance
-          .collection(role)
-          .doc(_auth.currentUser.uid)
-          .get()
-          .then((value) {
-        print(value.data()["first_name"]);
-        print(value.data()["last_name"]);
-
-        name = value.data()["first_name"] + " " + value.data()["last_name"];
-      });
     });
-    return name ?? "User";
+
+    var value = await FirebaseFirestore.instance
+        .collection(role)
+        .doc(_auth.currentUser.uid)
+        .get();
+
+    name = value.data()["first_name"];
+    return value;
+  }
+
+  Future getRole() async {
+    var value = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(_auth.currentUser.uid)
+        .get();
+    var name = value.data()["role"];
+    return name;
   }
 
   @override
@@ -78,9 +80,16 @@ class HomeWidget extends StatelessWidget {
             SizedBox(
               width: 20,
             ),
-            Text(
-              "Hi User! ${getName()}",
-              style: TextStyle(color: Colors.white, fontSize: 30),
+            FutureBuilder(
+              future: getName(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  return Text('Hi ${snapshot.data["first_name"]}!',
+                      style: TextStyle(color: Colors.white, fontSize: 30));
+                }
+                return Text('Hi User!',
+                    style: TextStyle(color: Colors.white, fontSize: 30));
+              },
             ),
             Expanded(
               child: IconButton(
@@ -164,35 +173,48 @@ class HomeWidget extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) => AddNotice(),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                    ),
-                                    isScrollControlled: true,
-                                    backgroundColor: Color(0xff2A2D41),
-                                  );
+                              FutureBuilder(
+                                future: getRole(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot snapshot) {
+                                  if (snapshot.hasData &&
+                                      snapshot.data == "teacher") {
+                                    print(snapshot.data);
+                                    return GestureDetector(
+                                      onTap: () {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          builder: (context) => AddNotice(),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                          ),
+                                          isScrollControlled: true,
+                                          backgroundColor: Color(0xff2A2D41),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Container(
+                                          child: Icon(Icons.add),
+                                          padding: EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                              color: kCyan,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    offset: Offset(1, 1),
+                                                    blurRadius: 3,
+                                                    color: Colors.black54)
+                                              ]),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return Container();
                                 },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Container(
-                                    child: Icon(Icons.add),
-                                    padding: EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                        color: kCyan,
-                                        borderRadius: BorderRadius.circular(10),
-                                        boxShadow: [
-                                          BoxShadow(
-                                              offset: Offset(1, 1),
-                                              blurRadius: 3,
-                                              color: Colors.black54)
-                                        ]),
-                                  ),
-                                ),
-                              )
+                              ),
                             ],
                           ),
                           SizedBox(
@@ -235,35 +257,47 @@ class HomeWidget extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) => AddTask(),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                    ),
-                                    isScrollControlled: true,
-                                    backgroundColor: Color(0xff2A2D41),
-                                  );
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: Container(
-                                      child: Icon(Icons.add),
-                                      padding: EdgeInsets.all(2),
-                                      decoration: BoxDecoration(
-                                          color: kBlue,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          boxShadow: [
-                                            BoxShadow(
-                                                offset: Offset(1, 1),
-                                                blurRadius: 4,
-                                                color: Colors.black54)
-                                          ])),
-                                ),
-                              )
+                              FutureBuilder(
+                                  future: getRole(),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot snapshot) {
+                                    if (snapshot.hasData &&
+                                        snapshot.data == "teacher") {
+                                      print(snapshot.data);
+                                      return GestureDetector(
+                                        onTap: () {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            builder: (context) => AddTask(),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
+                                            ),
+                                            isScrollControlled: true,
+                                            backgroundColor: Color(0xff2A2D41),
+                                          );
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(5.0),
+                                          child: Container(
+                                              child: Icon(Icons.add),
+                                              padding: EdgeInsets.all(2),
+                                              decoration: BoxDecoration(
+                                                  color: kBlue,
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                        offset: Offset(1, 1),
+                                                        blurRadius: 4,
+                                                        color: Colors.black54)
+                                                  ])),
+                                        ),
+                                      );
+                                    } else {
+                                      return Container();
+                                    }
+                                  })
                             ],
                           ),
                           SizedBox(

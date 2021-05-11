@@ -1,13 +1,32 @@
 import 'package:eduverse/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Profile extends StatefulWidget {
-  @override
-  _ProfileState createState() => _ProfileState();
-}
+class Profile extends StatelessWidget {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String role;
+  Future getName() async {
+//    String role;
+    String name;
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(_auth.currentUser.uid)
+        .get()
+        .then((value) {
+      role = value.data()["role"] + "s";
+    });
 
-class _ProfileState extends State<Profile> {
+    var value = await FirebaseFirestore.instance
+        .collection(role)
+        .doc(_auth.currentUser.uid)
+        .get();
+
+    name = value.data()["first_name"] + " " + value.data()["last_name"];
+    return value;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,12 +55,26 @@ class _ProfileState extends State<Profile> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 35),
-                  child: Text(
-                    'Username',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800),
+                  child: FutureBuilder(
+                    future: getName(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.hasData) {
+                        return Text(
+                            snapshot.data["first_name"] +
+                                " " +
+                                snapshot.data["last_name"],
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800));
+                      } else {
+                        return Text('User Name!',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800));
+                      }
+                    },
                   ),
                 ),
               ),
@@ -66,41 +99,126 @@ class _ProfileState extends State<Profile> {
               ),
             ],
           ),
-          Flexible(
-            fit: FlexFit.loose,
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Container(
-                height: 240,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                  shape: BoxShape.rectangle,
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
-                      child: profileData('Name :', 'Sangeetha'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: profileData('Branch :', 'Information Technology'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: profileData('Year :', '3'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: profileData('Phone :', '9188023790'),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          )
+          FutureBuilder(
+              future: getName(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  if (role == "teachers") {
+                    return FacultyProfileCard(
+                      email: snapshot.data["email"],
+                      branch: snapshot.data["branch"],
+                      designation: snapshot.data["designation"],
+                      phone: snapshot.data["phone"],
+                    );
+                  } else {
+                    return StudentProfileCard(
+                      email: snapshot.data["email"],
+                      branch: snapshot.data["branch"],
+                      year: snapshot.data["graduating_year"],
+                      phone: snapshot.data["phone"],
+                      register: snapshot.data["register_number"],
+                    );
+                  }
+                } else
+                  return StudentProfileCard(
+                      email: "not found",
+                      branch: "not found",
+                      year: "not found",
+                      phone: "not found",
+                      register: "not found");
+              })
         ],
+      ),
+    );
+  }
+}
+
+class StudentProfileCard extends StatelessWidget {
+  const StudentProfileCard(
+      {this.branch, this.year, this.email, this.phone, this.register});
+  final String email;
+  final String branch;
+  final String year;
+  final String phone;
+  final String register;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(10),
+          shape: BoxShape.rectangle,
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
+              child: profileData('Register Number:', register),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
+              child: profileData('Email :', email),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: profileData('Branch :', branch),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: profileData('Graduating Year :', year),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: profileData('Phone :', phone),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class FacultyProfileCard extends StatelessWidget {
+  const FacultyProfileCard(
+      {this.branch, this.designation, this.email, this.phone});
+  final String email;
+  final String branch;
+  final String designation;
+  final String phone;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(10),
+          shape: BoxShape.rectangle,
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
+              child: profileData('Email :', email),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: profileData('Branch :', branch),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: profileData('Designation :', designation),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: profileData('Phone :', phone),
+            )
+          ],
+        ),
       ),
     );
   }

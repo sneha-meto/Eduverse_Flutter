@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:eduverse/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AddTask extends StatefulWidget {
   @override
@@ -12,6 +13,22 @@ class _AddTaskState extends State<AddTask> {
   String _dateText = '';
   String taskText;
   FirebaseFirestore db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String fName;
+  String lName;
+  String branch;
+
+  Future getUserDetail() async {
+    await FirebaseFirestore.instance
+        .collection("teachers")
+        .doc(_auth.currentUser.uid)
+        .get()
+        .then((value) {
+      fName = value.data()["first_name"];
+      lName = value.data()["last_name"];
+      branch = value.data()["branch"].toString().toLowerCase();
+    });
+  }
 
   Future<Null> _selectDueDate(BuildContext context) async {
     final picked = await showDatePicker(
@@ -29,9 +46,9 @@ class _AddTaskState extends State<AddTask> {
 
   void submitTask() {
     db.collection("tasks").add({
-      "branch": "it",
+      "branch": branch,
       "due": _dueDate,
-      "faculty": "Sherlock Holmes",
+      "faculty": "$fName $lName",
       "task": taskText
     }).then((value) {
       print(value.id);
@@ -123,7 +140,8 @@ class _AddTaskState extends State<AddTask> {
                 ),
                 InkWell(
                   onTap: () {
-                    submitTask();
+                    getUserDetail().then((value) => submitTask());
+
                     Navigator.pop(context);
                   },
                   child: Container(
