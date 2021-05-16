@@ -100,8 +100,11 @@ class HomeWidget extends StatelessWidget {
                     ),
                     onPressed: () {
                       Future<void> _signOut() async {
+                        print("success  signoff ");
                         return _auth.signOut();
                       }
+
+                      _signOut();
 
                       Navigator.push(
                           context,
