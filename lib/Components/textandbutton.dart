@@ -30,6 +30,7 @@ class _TextBoxState extends State<TextBox> {
         // autofocus: true,
         controller: widget.controller,
         decoration: InputDecoration(
+          isDense: true,
           hintText: widget.hint,
           hintStyle: TextStyle(color: Colors.white70),
           border: OutlineInputBorder(
@@ -39,7 +40,7 @@ class _TextBoxState extends State<TextBox> {
               width: 2,
             ),
           ),
-          // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           disabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15.0),
             borderSide: BorderSide(

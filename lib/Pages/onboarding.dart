@@ -1,3 +1,4 @@
+import 'package:eduverse/Pages/login.dart';
 import 'package:flutter/material.dart';
 import 'package:eduverse/constants.dart';
 import 'package:eduverse/Pages/teacher_signup.dart';
@@ -24,7 +25,7 @@ class LaunchScreen extends StatelessWidget {
                 height: 180,
               )),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 50),
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 45),
             width: double.infinity,
             height: double.infinity,
             child: Column(
@@ -85,6 +86,38 @@ class LaunchScreen extends StatelessWidget {
                             builder: (BuildContext context) => Student(),
                           ));
                     }),
+                Center(
+                  child: Container(
+                      child: Row(
+                        children: <Widget>[
+                          Text(
+                            "Already have an account?",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          FlatButton(
+                            textColor: Color(0xFF55ACD1),
+                            child: Text(
+                              'Sign In',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            onPressed: () async{
+
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (BuildContext context) => Login(),
+                                  ));
+                            },
+                          )
+                        ],
+                        mainAxisAlignment: MainAxisAlignment.center,
+                      )),
+                ),
               ],
             ),
           ),
