@@ -1,17 +1,84 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/rendering.dart';
 import 'package:eduverse/Pages/share.dart';
 import 'package:eduverse/constants.dart';
-import 'package:eduverse/constants.dart';
+import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
+  const ChatScreen({@required this.groupId, @required this.name});
+  final String groupId;
+  final String name;
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  List messages;
+  var userRole;
+  var user;
+  var userName;
+  var userNameChat;
+  final TextEditingController _messageController = TextEditingController();
+
+  addMessage() {
+    var value = _auth.currentUser.uid;
+    DocumentReference collectionReference =
+        FirebaseFirestore.instance.collection("users").doc(value);
+    collectionReference.snapshots().listen((snapshot) {
+      print(snapshot.data());
+      userRole = snapshot.data();
+      user = userRole["role"];
+      setState(() {
+        userRole = snapshot.data();
+        user = userRole["role"];
+        print(user);
+      });
+    });
+    if (user == "student") {
+      DocumentReference collection = FirebaseFirestore.instance.collection("students").doc(value);
+      collection.snapshots().listen((snapshot) {
+        print(snapshot.data());
+        userName = snapshot.data();
+        userNameChat = userName["first_name"];
+        setState(() {
+          userName = snapshot.data();
+          userNameChat = userName["first_name"];
+          print(userNameChat);
+        });
+      });
+    } else {
+      DocumentReference collection = FirebaseFirestore.instance.collection("teachers").doc(value);
+      collection.snapshots().listen((snapshot) {
+        print(snapshot.data());
+        userName = snapshot.data();
+        userNameChat = userName["first_name"];
+        setState(() {
+          userName = snapshot.data();
+          userNameChat = userName["first_name"];
+        });
+      });
+    }
+    Map<String, dynamic> messageData = {
+      "sent_role": userNameChat.toString(),
+      "text": _messageController.text,
+      "sent_by": value,
+      "time": DateTime.now(),
+    };
+
+    print(value);
+    CollectionReference message = FirebaseFirestore.instance
+        .collection('groups')
+        .doc(widget.groupId)
+        .collection('messages');
+    message.add(messageData);
+    _messageController.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +105,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 //     fit: BoxFit.fill),
               ),
             ),
-            Text('Official IT', style: TextStyle(fontSize: 20)),
+            Text(widget.name, style: TextStyle(fontSize: 20)),
           ],
         ),
         actions: [
@@ -57,18 +124,45 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(4),
-              child: Column(
-                children: [
-                  ChatBubble(
-                    isUser: false,
-                  ),
-                  ChatBubble(
-                    isUser: true,
-                  ),
-                  ChatBubble(
-                    isUser: false,
-                  ),
-                ],
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('groups')
+                    .doc(widget.groupId)
+                    .collection('messages')
+                    .orderBy("time")
+                    .snapshots(),
+                builder: (context, userSnapshot) {
+                  return userSnapshot.hasData
+                      ? ListView.builder(
+                          itemCount: userSnapshot.data.docs.length,
+                          itemBuilder: (context, index) {
+                            return userSnapshot.data.docs[index]["sent_by"] !=
+                                    _auth.currentUser.uid
+                                ? Container(
+                                    color: Colors.transparent,
+                                    child: ChatBubble(
+                                      isUser: true,
+                                      messageText: userSnapshot.data.docs[index]
+                                          ["text"],
+                                      time: userSnapshot.data.docs[index]
+                                          ["time"],
+                                      userName: userSnapshot.data.docs[index]
+                                          ["sent_role"],
+                                    ))
+                                : Container(
+                                    color: Colors.transparent,
+                                    child: ChatBubble(
+                                      isUser: false,
+                                      messageText: userSnapshot.data.docs[index]
+                                          ["text"],
+                                      time: userSnapshot.data.docs[index]
+                                          ["time"],
+                                      userName: userSnapshot.data.docs[index]
+                                          ["sent_role"],
+                                    ));
+                          })
+                      : CircularProgressIndicator();
+                },
               ),
             ),
           ),
@@ -84,7 +178,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   width: 5.0,
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    addMessage();
+                  },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(15.0), //or 15.0
                     child: Container(
@@ -120,6 +216,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16.0),
                   child: TextField(
+                    controller: _messageController,
                     decoration: InputDecoration(
                       hintText: 'Type a message',
                       border: InputBorder.none,
@@ -154,8 +251,11 @@ class _ChatScreenState extends State<ChatScreen> {
 }
 
 class ChatBubble extends StatelessWidget {
-  const ChatBubble({this.isUser});
+  const ChatBubble({this.isUser, this.messageText, this.time, this.userName});
   final bool isUser;
+  final String userName;
+  final String messageText;
+  final Timestamp time;
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -179,21 +279,21 @@ class ChatBubble extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isUser ? "" : 'Faculty 1',
+                    isUser ? "" : userName,
                     style: TextStyle(
                       color: kCyan,
                       fontSize: 15.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text('this is a sample text message',
+                  Text(messageText,
                       style: TextStyle(fontSize: 15.0, color: Colors.white)),
                   Align(
                       alignment: Alignment.bottomRight,
                       child: Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
-                          '10:02 AM',
+                          DateFormat.jm().format(time.toDate()),
                           style: TextStyle(fontSize: 12.0, color: Colors.white),
                         ),
                       )),
