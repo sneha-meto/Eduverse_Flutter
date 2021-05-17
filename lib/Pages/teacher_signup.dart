@@ -53,19 +53,36 @@ class _TeacherState extends State<Teacher> {
                       children: [
                         Container(
                           child: Padding(
-                            padding: EdgeInsets.all(30.0),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15.0, vertical: 20),
                             child: Align(
                               alignment: Alignment.topLeft,
-                              child: Text(
-                                "Hello!",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 36.0,
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Faculty Sign Up",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25.0,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Let's get you started on your \nbrand new faculty account!",
+                                    style: TextStyle(
+                                      color: Colors.white70,
+//                                  fontWeight: FontWeight.bold,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
+                        ),
+                        SizedBox(
+                          height: 20,
                         ),
                         Padding(
                           padding: EdgeInsets.all(20.0),
@@ -74,10 +91,10 @@ class _TeacherState extends State<Teacher> {
                               "EDUVERSE",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 28.0,
-                              ),
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  letterSpacing: 2),
                             ),
                           ),
                         ),
@@ -253,9 +270,11 @@ class _TeacherState extends State<Teacher> {
                                 UserHelper.saveName(
                                     _firstname.text + " " + _lastname.text);
                                 UserHelper.saveRole("teacher");
+                                UserHelper.saveBranch(
+                                    _chosenValue.toLowerCase());
 
                                 Navigator.of(context).pushReplacement(
-                                    new MaterialPageRoute(
+                                    MaterialPageRoute(
                                         builder: (context) => HomePage()));
 
                                 // Navigator.push(

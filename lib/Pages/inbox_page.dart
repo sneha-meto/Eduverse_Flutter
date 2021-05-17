@@ -41,7 +41,6 @@ class InboxWidget extends StatelessWidget {
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              print(snapshot.data);
               return ListView.builder(
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (BuildContext context, int i) {
@@ -52,14 +51,14 @@ class InboxWidget extends StatelessWidget {
                           .toString()
                           .replaceAll("_", "")
                           .replaceAll(Constants.myName, ""),
-//                      chatRoomId:
-//                          snapshot.data.documents[index].data["chatRoomId"],
+                      groupId: snapshot.data.docs[i].id,
+                      isGroup: false,
                     ),
                   );
                 },
               );
             } else
-              return Container(child: Text("Inbox empty"));
+              return Center(child: CircularProgressIndicator());
           }),
     );
   }

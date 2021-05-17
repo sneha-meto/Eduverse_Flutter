@@ -10,4 +10,5 @@ final kSignUpText = TextStyle(color: Colors.grey);
 class Constants {
   static String myName = "";
   static String myRole = "";
+  static String myBranch = "";
 }

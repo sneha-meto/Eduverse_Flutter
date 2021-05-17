@@ -39,7 +39,7 @@ class _LoginState extends State<Login> {
     ),
   );
 
-  void saveUserInfo() async {
+  Future saveUserInfo() async {
     DocumentSnapshot<Map<String, dynamic>> userRoleSnapshot =
         await DatabaseMethods().getUserRole(_auth.currentUser.uid);
     DocumentSnapshot<Map<String, dynamic>> userInfoSnapshot =
@@ -49,6 +49,8 @@ class _LoginState extends State<Login> {
     UserHelper.saveName(userInfoSnapshot.data()["first_name"] +
         " " +
         userInfoSnapshot.data()["last_name"]);
+    UserHelper.saveBranch(
+        userInfoSnapshot.data()["branch"].toString().toLowerCase());
   }
 
   @override
@@ -83,28 +85,23 @@ class _LoginState extends State<Login> {
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 36.0,
+                                  fontSize: 26.0,
                                 ),
                               ),
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Center(
-                            child: Text(
-                              "EDUVERSE",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 30.0,
-                              ),
-                            ),
-                          ),
-                        ),
                         SizedBox(
-                          height: 70.0,
+                          height: 90.0,
+                        ),
+                        Text('EDUVERSE',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                                fontSize: 22,
+                                letterSpacing: 2)),
+                        SizedBox(
+                          height: 30.0,
                         ),
                         TextBox(
                           textInputType: TextInputType.emailAddress,
@@ -128,8 +125,7 @@ class _LoginState extends State<Login> {
                                   ))
                                       .user;
                                   if (user != null) {
-                                    saveUserInfo();
-
+                                    await saveUserInfo();
                                     Navigator.of(context).pushReplacement(
                                         new MaterialPageRoute(
                                             builder: (context) => HomePage()));
@@ -195,7 +191,7 @@ class _LoginState extends State<Login> {
                                     var boolKey = 'isFirstTime';
                                     var isFirstTime =
                                         prefs.getBool(boolKey) ?? true;
-                                    Navigator.push(
+                                    Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
                                           builder: (BuildContext context) =>

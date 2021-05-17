@@ -51,16 +51,30 @@ class _StudentState extends State<Student> {
                       children: [
                         Container(
                           child: Padding(
-                            padding: EdgeInsets.all(30.0),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15.0, vertical: 20),
                             child: Align(
                               alignment: Alignment.topLeft,
-                              child: Text(
-                                "Hello!",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 36.0,
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Student Sign Up",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 26.0,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Let's get you started on your \nbrand new student account!",
+                                    style: TextStyle(
+                                      color: Colors.white70,
+//                                  fontWeight: FontWeight.bold,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -72,10 +86,10 @@ class _StudentState extends State<Student> {
                               "EDUVERSE",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 28.0,
-                              ),
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  letterSpacing: 2),
                             ),
                           ),
                         ),
@@ -207,6 +221,8 @@ class _StudentState extends State<Student> {
                                 UserHelper.saveName(
                                     _firstname.text + " " + _lastname.text);
                                 UserHelper.saveRole("student");
+                                UserHelper.saveBranch(
+                                    _chosenValue.toLowerCase());
 
                                 Navigator.of(context).pushReplacement(
                                     new MaterialPageRoute(

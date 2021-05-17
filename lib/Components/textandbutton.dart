@@ -1,3 +1,4 @@
+import 'package:eduverse/Utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class TextBox extends StatefulWidget {
@@ -84,18 +85,21 @@ class _ButtonState extends State<Button> {
         color: Colors.transparent,
         width: MediaQuery.of(context).size.width,
         height: 50,
-        child: FlatButton(
-          shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(15.0),
-          ),
-          onPressed: widget.onTap,
-          color: Color(0xFF49C9C4),
-          child: Text(
-            widget.buttonName,
-            style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Raleway',
-              fontSize: 22.0,
+        child: InkWell(
+          onTap: widget.onTap,
+          child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.0),
+                gradient: LinearGradient(colors: [kBlue, kCyan])),
+            child: Center(
+              child: Text(
+                widget.buttonName,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.bold,
+                    shadows: [Shadow(offset: Offset(1, 1), blurRadius: 2)]),
+              ),
             ),
           ),
         ),

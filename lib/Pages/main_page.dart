@@ -28,6 +28,7 @@ class _HomePageState extends State<HomePage> {
   getUserInfo() async {
     Constants.myName = await UserHelper.getName();
     Constants.myRole = await UserHelper.getRole();
+    Constants.myBranch = await UserHelper.getBranch();
     print(Constants.myName);
   }
 

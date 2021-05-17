@@ -149,6 +149,7 @@ class BoxWidget extends StatelessWidget {
             Image.asset(
               image,
               color: Colors.white,
+              height: 120,
             ),
             Text(
               title,

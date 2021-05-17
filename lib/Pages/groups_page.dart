@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eduverse/Utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:eduverse/Components/chat_name_card.dart';
@@ -37,7 +38,7 @@ class _GroupsWidgetState extends State<GroupsWidget> {
         body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('groups')
-              .where("members", arrayContains: _auth.currentUser.uid)
+              .where("branch", isEqualTo: Constants.myBranch)
               .snapshots(),
           builder: (context, userSnapshot) {
             return userSnapshot.hasData
@@ -49,10 +50,11 @@ class _GroupsWidgetState extends State<GroupsWidget> {
                         child: ChatNameCard(
                           name: userSnapshot.data.docs[index]["name"],
                           groupId: userSnapshot.data.docs[index].id,
+                          isGroup: true,
                         ),
                       );
                     })
-                : CircularProgressIndicator();
+                : Center(child: CircularProgressIndicator());
           },
         ));
   }

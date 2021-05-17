@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eduverse/Services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +11,11 @@ import 'package:eduverse/Utils/constants.dart';
 import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({@required this.groupId, @required this.name});
+  const ChatScreen(
+      {@required this.groupId, @required this.name, @required this.isGroup});
   final String groupId;
   final String name;
+  final bool isGroup;
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
@@ -27,58 +30,16 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
 
   addMessage() {
-    var value = _auth.currentUser.uid;
-    DocumentReference collectionReference =
-        FirebaseFirestore.instance.collection("users").doc(value);
-    collectionReference.snapshots().listen((snapshot) {
-      print(snapshot.data());
-      userRole = snapshot.data();
-      user = userRole["role"];
-      setState(() {
-        userRole = snapshot.data();
-        user = userRole["role"];
-        print(user);
-      });
-    });
-    if (user == "student") {
-      DocumentReference collection =
-          FirebaseFirestore.instance.collection("students").doc(value);
-      collection.snapshots().listen((snapshot) {
-        print(snapshot.data());
-        userName = snapshot.data();
-        userNameChat = userName["first_name"];
-        setState(() {
-          userName = snapshot.data();
-          userNameChat = userName["first_name"];
-          print(userNameChat);
-        });
-      });
-    } else {
-      DocumentReference collection =
-          FirebaseFirestore.instance.collection("teachers").doc(value);
-      collection.snapshots().listen((snapshot) {
-        print(snapshot.data());
-        userName = snapshot.data();
-        userNameChat = userName["first_name"];
-        setState(() {
-          userName = snapshot.data();
-          userNameChat = userName["first_name"];
-        });
-      });
-    }
     Map<String, dynamic> messageData = {
-      "sent_role": userNameChat.toString(),
       "text": _messageController.text,
-      "sent_by": value,
+      "sent_by": Constants.myName,
       "time": DateTime.now(),
     };
 
-    print(value);
-    CollectionReference message = FirebaseFirestore.instance
-        .collection('groups')
-        .doc(widget.groupId)
-        .collection('messages');
-    message.add(messageData);
+    widget.isGroup
+        ? DatabaseMethods().addMessage("groups", widget.groupId, messageData)
+        : DatabaseMethods().addMessage("chats", widget.groupId, messageData);
+
     _messageController.clear();
   }
 
@@ -128,19 +89,26 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('groups')
-                    .doc(widget.groupId)
-                    .collection('messages')
-                    .orderBy("time")
-                    .snapshots(),
+                stream: widget.isGroup
+                    ? FirebaseFirestore.instance
+                        .collection('groups')
+                        .doc(widget.groupId)
+                        .collection('messages')
+                        .orderBy("time")
+                        .snapshots()
+                    : FirebaseFirestore.instance
+                        .collection('chats')
+                        .doc(widget.groupId)
+                        .collection('messages')
+                        .orderBy("time")
+                        .snapshots(),
                 builder: (context, userSnapshot) {
                   return userSnapshot.hasData
                       ? ListView.builder(
                           itemCount: userSnapshot.data.docs.length,
                           itemBuilder: (context, index) {
-                            return userSnapshot.data.docs[index]["sent_by"] !=
-                                    _auth.currentUser.uid
+                            return userSnapshot.data.docs[index]["sent_by"] ==
+                                    Constants.myName
                                 ? Container(
                                     color: Colors.transparent,
                                     child: ChatBubble(
@@ -150,7 +118,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                       time: userSnapshot.data.docs[index]
                                           ["time"],
                                       userName: userSnapshot.data.docs[index]
-                                          ["sent_role"],
+                                          ["sent_by"],
                                     ))
                                 : Container(
                                     color: Colors.transparent,
@@ -161,10 +129,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                       time: userSnapshot.data.docs[index]
                                           ["time"],
                                       userName: userSnapshot.data.docs[index]
-                                          ["sent_role"],
+                                          ["sent_by"],
                                     ));
                           })
-                      : CircularProgressIndicator();
+                      : Center(child: CircularProgressIndicator());
                 },
               ),
             ),
@@ -219,6 +187,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16.0),
                   child: TextField(
+                    style: TextStyle(color: Colors.white),
                     controller: _messageController,
                     decoration: InputDecoration(
                       hintText: 'Type a message',

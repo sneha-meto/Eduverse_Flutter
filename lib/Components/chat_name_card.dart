@@ -3,9 +3,11 @@ import 'package:eduverse/Pages/chat_screen.dart';
 import 'package:eduverse/Utils/constants.dart';
 
 class ChatNameCard extends StatelessWidget {
-  const ChatNameCard({@required this.name, @required this.groupId});
+  const ChatNameCard(
+      {@required this.name, @required this.groupId, @required this.isGroup});
   final String name;
   final String groupId;
+  final bool isGroup;
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +19,7 @@ class ChatNameCard extends StatelessWidget {
               builder: (context) => ChatScreen(
                     groupId: groupId,
                     name: name,
+                    isGroup: isGroup,
                   )),
         );
       },

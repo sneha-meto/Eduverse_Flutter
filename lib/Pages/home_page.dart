@@ -121,7 +121,7 @@ class _HomeWidgetState extends State<HomeWidget> {
 
                       _signOut();
 
-                      Navigator.push(
+                      Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (BuildContext context) => Login(),

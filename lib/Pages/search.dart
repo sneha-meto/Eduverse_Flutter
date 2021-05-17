@@ -2,8 +2,11 @@ import 'package:eduverse/Services/database.dart';
 import 'package:eduverse/Utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'chat_screen.dart';
 
 class SearchPage extends StatefulWidget {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -30,6 +33,27 @@ class _SearchPageState extends State<SearchPage> {
         });
       });
     }
+  }
+
+  sendMessage(String uid, String userName) {
+    List<String> users = [widget._auth.currentUser.uid, uid];
+
+    String chatId = getChatId(Constants.myName, userName);
+
+    Map<String, dynamic> chatRoom = {
+      "participants": users,
+    };
+
+    DatabaseMethods().createChat(chatRoom, chatId);
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ChatScreen(
+                  groupId: chatId,
+                  name: userName,
+                  isGroup: false,
+                )));
   }
 
   @override
@@ -102,7 +126,9 @@ class _SearchPageState extends State<SearchPage> {
                           itemCount: searchResultSnapshot.docs.length,
                           itemBuilder: (context, index) {
                             return userTile(
+                              searchResultSnapshot.docs[index].id,
                               searchResultSnapshot.docs[index].data()["name"],
+                              searchResultSnapshot.docs[index].data()["role"],
                             );
                           })
                       : Container()
@@ -111,7 +137,7 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget userTile(String userName) {
+  Widget userTile(String uid, String userName, String role) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
@@ -124,15 +150,15 @@ class _SearchPageState extends State<SearchPage> {
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),
               Text(
-                "detail",
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                role == "teacher" ? "FACULTY" : "STUDENT",
+                style: TextStyle(color: Colors.grey, fontSize: 13),
               )
             ],
           ),
           Spacer(),
           GestureDetector(
             onTap: () {
-//              sendMessage(userName);
+              sendMessage(uid, userName);
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -147,5 +173,13 @@ class _SearchPageState extends State<SearchPage> {
         ],
       ),
     );
+  }
+
+  getChatId(String a, String b) {
+    if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
+      return "$b\_$a";
+    } else {
+      return "$a\_$b";
+    }
   }
 }

@@ -34,16 +34,24 @@ class DatabaseMethods {
         .where('name', isLessThan: searchKey + 'z')
         .get();
   }
-//
-//  Future<bool> addChatRoom(chatRoom, chatRoomId) {
-//    FirebaseFirestore.instance
-//        .collection("chatRoom")
-//        .doc(chatRoomId)
-//        .set(chatRoom)
-//        .catchError((e) {
-//      print(e);
-//    });
-//  }
+
+  void createChat(newChat, chatId) {
+    FirebaseFirestore.instance
+        .collection("chats")
+        .doc(chatId)
+        .set(newChat)
+        .catchError((e) {
+      print(e);
+    });
+  }
+
+  void addMessage(collection, docId, messageData) {
+    CollectionReference message = FirebaseFirestore.instance
+        .collection(collection)
+        .doc(docId)
+        .collection('messages');
+    message.add(messageData);
+  }
 //
 //  getChats(String chatRoomId) async{
 //    return FirebaseFirestore.instance
