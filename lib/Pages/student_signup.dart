@@ -1,14 +1,12 @@
+import 'package:eduverse/Services/user.dart';
 import 'package:flutter/material.dart';
 import 'package:eduverse/Components/textandbutton.dart';
 import 'package:firebase_core/firebase_core.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:eduverse/Pages/main_page.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-
 
 class Student extends StatefulWidget {
   @override
@@ -46,7 +44,8 @@ class _StudentState extends State<Student> {
               ListView(
                 children: [
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -106,11 +105,15 @@ class _StudentState extends State<Student> {
                             height: 50.0,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15.0),
-                              border: Border.all(color: Color(0xFF54ABD0), width: 2),
+                              border: Border.all(
+                                  color: Color(0xFF54ABD0), width: 2),
                             ),
                             child: Padding(
                               padding: EdgeInsets.only(
-                                  left: 15.0, right: 3.0, top: 3.0, bottom: 3.0),
+                                  left: 15.0,
+                                  right: 3.0,
+                                  top: 3.0,
+                                  bottom: 3.0),
                               child: DropdownButtonHideUnderline(
                                 child: DropdownButton<String>(
                                   isExpanded: true,
@@ -124,7 +127,8 @@ class _StudentState extends State<Student> {
                                     'IT',
                                     'CS',
                                     'ELECTRONICS',
-                                  ].map<DropdownMenuItem<String>>((String value) {
+                                  ].map<DropdownMenuItem<String>>(
+                                      (String value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Text(value),
@@ -165,38 +169,48 @@ class _StudentState extends State<Student> {
                         ),
                         Button(
                             buttonName: "Sign Up",
-                            onTap: () async{
-
+                            onTap: () async {
                               if (_formKey.currentState.validate()) {
                                 await _registerStudent();
                                 print(_auth.currentUser.uid);
 
-                                final firestoreInstance = FirebaseFirestore.instance;
-                                firestoreInstance.collection("students").doc(_auth.currentUser.uid).set(
-                                    {
-                                      'first_name': _firstname.text,
-                                      'last_name': _lastname.text,
-                                      'email' : _emailController.text,
-                                      'register_number': _registerno.text,
-                                      'branch' : _chosenValue,
-                                      'graduating_year' : _year.text,
-                                      'phone' : _phone.text,
-                                      'password' : _passwordController.text,
-                                      'role' : "student",
-                                    }).then((_){
+                                final firestoreInstance =
+                                    FirebaseFirestore.instance;
+                                firestoreInstance
+                                    .collection("students")
+                                    .doc(_auth.currentUser.uid)
+                                    .set({
+                                  'first_name': _firstname.text,
+                                  'last_name': _lastname.text,
+                                  'email': _emailController.text,
+                                  'register_number': _registerno.text,
+                                  'branch': _chosenValue,
+                                  'graduating_year': _year.text,
+                                  'phone': _phone.text,
+                                  'password': _passwordController.text,
+                                  'role': "student",
+                                }).then((_) {
                                   print("success!");
                                 });
 
-                                firestoreInstance.collection("users").doc(_auth.currentUser.uid).set(
-                                    {
-
-                                      'role' : "student",
-                                    }).then((_){
+                                firestoreInstance
+                                    .collection("users")
+                                    .doc(_auth.currentUser.uid)
+                                    .set({
+                                  'role': "student",
+                                  'name':
+                                      _firstname.text + " " + _lastname.text,
+                                }).then((_) {
                                   print("users success!");
                                 });
 
+                                UserHelper.saveName(
+                                    _firstname.text + " " + _lastname.text);
+                                UserHelper.saveRole("student");
+
                                 Navigator.of(context).pushReplacement(
-                                    new MaterialPageRoute(builder: (context) => HomePage()));
+                                    new MaterialPageRoute(
+                                        builder: (context) => HomePage()));
 
                                 // Navigator.push(
                                 //     context,
@@ -241,6 +255,4 @@ class _StudentState extends State<Student> {
       _success = false;
     }
   }
-
 }
-

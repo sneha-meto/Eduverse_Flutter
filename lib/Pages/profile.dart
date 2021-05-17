@@ -1,4 +1,4 @@
-import 'package:eduverse/constants.dart';
+import 'package:eduverse/Utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';

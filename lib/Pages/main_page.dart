@@ -1,6 +1,7 @@
+import 'package:eduverse/Services/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:eduverse/constants.dart';
+import 'package:eduverse/Utils/constants.dart';
 import 'package:eduverse/Pages/groups_page.dart';
 import 'package:eduverse/Pages/inbox_page.dart';
 import 'package:eduverse/Pages/home_page.dart';
@@ -22,6 +23,18 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  getUserInfo() async {
+    Constants.myName = await UserHelper.getName();
+    Constants.myRole = await UserHelper.getRole();
+    print(Constants.myName);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
   }
 
   @override

@@ -14,6 +14,12 @@ class GroupsWidget extends StatelessWidget {
           'Groups',
           style: TextStyle(fontSize: 25),
         ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         titleSpacing: 0,
         elevation: 0,
       ),

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/rendering.dart';
 import 'package:eduverse/Pages/share.dart';
-import 'package:eduverse/constants.dart';
-import 'package:eduverse/constants.dart';
+import 'package:eduverse/Utils/constants.dart';
+import 'package:eduverse/Utils/constants.dart';
 
 class ChatScreen extends StatefulWidget {
   @override

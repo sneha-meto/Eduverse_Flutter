@@ -6,3 +6,8 @@ final kPurple = Color(0xff63559C);
 final kScaffold = Color(0xff2A2D41);
 
 final kSignUpText = TextStyle(color: Colors.grey);
+
+class Constants {
+  static String myName = "";
+  static String myRole = "";
+}

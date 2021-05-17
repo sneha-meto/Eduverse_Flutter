@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:eduverse/Pages/chat_screen.dart';
-import 'package:eduverse/constants.dart';
+import 'package:eduverse/Utils/constants.dart';
 
 class ChatNameCard extends StatelessWidget {
   const ChatNameCard({@required this.name});

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:eduverse/constants.dart';
-import 'package:eduverse/constants.dart';
+import 'package:eduverse/Utils/constants.dart';
+import 'package:eduverse/Utils/constants.dart';
 
 class Tabs extends StatefulWidget {
   Tabs();

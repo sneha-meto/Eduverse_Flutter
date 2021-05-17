@@ -1,9 +1,8 @@
 import 'package:eduverse/Pages/profile.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:eduverse/Services/user.dart';
 import 'package:flutter/material.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
-import 'package:eduverse/data.dart' as data;
-import 'package:eduverse/constants.dart';
+import 'package:eduverse/Utils/constants.dart';
 import 'package:eduverse/Components/add_notice.dart';
 import 'package:eduverse/Components/add_task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,7 +13,12 @@ import 'package:eduverse/Pages/login.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
-class HomeWidget extends StatelessWidget {
+class HomeWidget extends StatefulWidget {
+  @override
+  _HomeWidgetState createState() => _HomeWidgetState();
+}
+
+class _HomeWidgetState extends State<HomeWidget> {
   String getDay() {
     var day =
         DateFormat('EEEE').format(DateTime.now()).toLowerCase().substring(0, 3);
@@ -34,6 +38,7 @@ class HomeWidget extends StatelessWidget {
         .get()
         .then((value) {
       role = value.data()["role"] + "s";
+      UserHelper.saveRole(value.data()["role"]);
     });
 
     var value = await FirebaseFirestore.instance
@@ -41,6 +46,10 @@ class HomeWidget extends StatelessWidget {
         .doc(_auth.currentUser.uid)
         .get();
 //    name = value.data()["first_name"];
+
+    UserHelper.saveName(
+        value.data()["first_name"] + " " + value.data()["last_name"]);
+
     return value;
   }
 
@@ -51,6 +60,12 @@ class HomeWidget extends StatelessWidget {
         .get();
     var role = value.data()["role"];
     return role;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
