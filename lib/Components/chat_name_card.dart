@@ -3,8 +3,9 @@ import 'package:eduverse/Pages/chat_screen.dart';
 import 'package:eduverse/Utils/constants.dart';
 
 class ChatNameCard extends StatelessWidget {
-  const ChatNameCard({@required this.name});
+  const ChatNameCard({@required this.name, @required this.groupId});
   final String name;
+  final String groupId;
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +13,11 @@ class ChatNameCard extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ChatScreen()),
+          MaterialPageRoute(
+              builder: (context) => ChatScreen(
+                    groupId: groupId,
+                    name: name,
+                  )),
         );
       },
       child: Container(
