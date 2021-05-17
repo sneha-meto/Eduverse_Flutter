@@ -13,12 +13,7 @@ import 'package:eduverse/Pages/login.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
-class HomeWidget extends StatefulWidget {
-  @override
-  _HomeWidgetState createState() => _HomeWidgetState();
-}
-
-class _HomeWidgetState extends State<HomeWidget> {
+class HomeWidget extends StatelessWidget {
   String getDay() {
     var day =
         DateFormat('EEEE').format(DateTime.now()).toLowerCase().substring(0, 3);
@@ -49,7 +44,6 @@ class _HomeWidgetState extends State<HomeWidget> {
 
     UserHelper.saveName(
         value.data()["first_name"] + " " + value.data()["last_name"]);
-
     return value;
   }
 
@@ -60,12 +54,6 @@ class _HomeWidgetState extends State<HomeWidget> {
         .get();
     var role = value.data()["role"];
     return role;
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
   }
 
   @override
@@ -238,41 +226,36 @@ class _HomeWidgetState extends State<HomeWidget> {
                             SizedBox(
                               height: 5,
                             ),
-                            FutureBuilder(
-                                future: getUser(),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot snapshot) {
-                                  if (snapshot.hasData) {
-                                    String userBranch = snapshot.data["branch"]
-                                        .toString()
-                                        .toLowerCase();
-                                    String userRole = snapshot.data["role"];
-                                    return StreamBuilder(
-                                        stream: FirebaseFirestore.instance
-                                            .collection("notices")
-                                            .where("branch",
-                                                isEqualTo: userBranch)
-                                            .snapshots(),
-                                        builder: (context, snapshotN) {
-                                          if (!snapshotN.hasData) {
-                                            return Text(
-                                              'No Data...',
-                                            );
-                                          } else {
-                                            var notices = snapshotN.data.docs;
-                                            return Flexible(
-                                                child: ListView.builder(
-                                                    itemCount: notices.length,
-                                                    itemBuilder: (context, i) {
-                                                      return NoticeTile(
-                                                          isFaculty: userRole ==
-                                                              "teacher",
-                                                          notice: notices[i]);
-                                                    }));
-                                          }
-                                        });
-                                  } else
-                                    return Text("no user data found");
+                            StreamBuilder(
+                                stream: FirebaseFirestore.instance
+                                    .collection("notices")
+                                    .where("branch",
+                                        isEqualTo: Constants.myBranch)
+                                    .snapshots(),
+                                builder: (context, snapshotN) {
+                                  if (snapshotN.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Center(
+                                        child: CircularProgressIndicator());
+                                  } else {
+                                    if (snapshotN.hasData) {
+                                      var notices = snapshotN.data.docs;
+                                      return Flexible(
+                                          child: ListView.builder(
+                                              itemCount: notices.length,
+                                              itemBuilder: (context, i) {
+                                                return NoticeTile(
+                                                    isFaculty:
+                                                        Constants.myRole ==
+                                                            "teacher",
+                                                    notice: notices[i]);
+                                              }));
+                                    } else {
+                                      return Text(
+                                        'No Data...',
+                                      );
+                                    }
+                                  }
                                 })
                           ],
                         ),
@@ -336,44 +319,38 @@ class _HomeWidgetState extends State<HomeWidget> {
                             SizedBox(
                               height: 5,
                             ),
-                            FutureBuilder(
-                                future: getUser(),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot snapshot) {
-                                  if (snapshot.hasData) {
-                                    String userBranch = snapshot.data["branch"]
-                                        .toString()
-                                        .toLowerCase();
-                                    String userRole = snapshot.data["role"];
-                                    return StreamBuilder(
-                                        stream: FirebaseFirestore.instance
-                                            .collection("tasks")
-                                            .where("branch",
-                                                isEqualTo: userBranch)
-                                            .snapshots(),
-                                        builder: (context, snapshot) {
-                                          if (!snapshot.hasData) {
-                                            return Text(
-                                              'No Data...',
-                                            );
-                                          } else {
-                                            List tasks = snapshot.data.docs;
-                                            print(tasks);
-                                            return Flexible(
-                                              child: ListView.builder(
-                                                  itemCount: tasks.length,
-                                                  itemBuilder: (context, i) {
-                                                    return TaskTile(
-                                                      task: tasks[i],
-                                                      isFaculty:
-                                                          userRole == "teacher",
-                                                    );
-                                                  }),
-                                            );
-                                          }
-                                        });
-                                  } else
-                                    return Text("no user data found");
+                            StreamBuilder(
+                                stream: FirebaseFirestore.instance
+                                    .collection("tasks")
+                                    .where("branch",
+                                        isEqualTo: Constants.myBranch)
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Center(
+                                        child: CircularProgressIndicator());
+                                  } else {
+                                    if (snapshot.hasData) {
+                                      List tasks = snapshot.data.docs;
+                                      print(tasks);
+                                      return Flexible(
+                                        child: ListView.builder(
+                                            itemCount: tasks.length,
+                                            itemBuilder: (context, i) {
+                                              return TaskTile(
+                                                task: tasks[i],
+                                                isFaculty: Constants.myRole ==
+                                                    "teacher",
+                                              );
+                                            }),
+                                      );
+                                    } else {
+                                      return Text(
+                                        'No Data...',
+                                      );
+                                    }
+                                  }
                                 })
                           ],
                         ),

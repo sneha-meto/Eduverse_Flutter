@@ -45,11 +45,11 @@ class _LoginState extends State<Login> {
     DocumentSnapshot<Map<String, dynamic>> userInfoSnapshot =
         await DatabaseMethods().getUserInfo(
             _auth.currentUser.uid, userRoleSnapshot.data()["role"]);
-    UserHelper.saveRole(userInfoSnapshot.data()["role"]);
-    UserHelper.saveName(userInfoSnapshot.data()["first_name"] +
+    await UserHelper.saveRole(userInfoSnapshot.data()["role"]);
+    await UserHelper.saveName(userInfoSnapshot.data()["first_name"] +
         " " +
         userInfoSnapshot.data()["last_name"]);
-    UserHelper.saveBranch(
+    await UserHelper.saveBranch(
         userInfoSnapshot.data()["branch"].toString().toLowerCase());
   }
 
@@ -125,7 +125,7 @@ class _LoginState extends State<Login> {
                                   ))
                                       .user;
                                   if (user != null) {
-                                    await saveUserInfo();
+                                    saveUserInfo();
                                     Navigator.of(context).pushReplacement(
                                         new MaterialPageRoute(
                                             builder: (context) => HomePage()));

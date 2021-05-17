@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:eduverse/Pages/chat_screen.dart';
 import 'package:eduverse/Utils/constants.dart';
+import 'dart:math';
 
 class ChatNameCard extends StatelessWidget {
-  const ChatNameCard(
+  ChatNameCard(
       {@required this.name, @required this.groupId, @required this.isGroup});
   final String name;
   final String groupId;
   final bool isGroup;
+  final Random random = Random();
+  getRandomColour() {
+    var themeColours = [kBlue, kCyan, kPurple];
+    return themeColours[random.nextInt(3)];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +40,25 @@ class ChatNameCard extends StatelessWidget {
           children: [
             Container(
               // padding: EdgeInsets.all(25),
+              child: Center(
+                  child: Text(
+                name[0].toUpperCase(),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                          color: Colors.black45,
+                          offset: Offset(1, 1),
+                          blurRadius: 5)
+                    ]),
+              )),
               width: 50,
               height: 50,
               margin: EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: kCyan,
+                color: getRandomColour(),
                 borderRadius: BorderRadius.circular(10),
                 shape: BoxShape.rectangle,
                 // image: DecorationImage(
@@ -46,12 +66,9 @@ class ChatNameCard extends StatelessWidget {
                 //     fit: BoxFit.fill),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Text(
-                name,
-                style: TextStyle(color: Colors.white, fontSize: 15),
-              ),
+            Text(
+              name,
+              style: TextStyle(color: Colors.white, fontSize: 15),
             )
           ],
         ),
