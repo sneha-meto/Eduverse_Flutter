@@ -1,16 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:eduverse/Utils/constants.dart';
 import 'package:eduverse/Utils/constants.dart';
 
 class Tabs extends StatefulWidget {
-  Tabs();
+  const Tabs(
+      {@required this.groupId});
+  final String groupId;
 
   @override
   _TabsState createState() => _TabsState();
 }
 
 class _TabsState extends State<Tabs> {
+  FirebaseFirestore _firebaseFirestore=FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -105,7 +110,29 @@ class _TabsState extends State<Tabs> {
               ],
             ),
             Text(''),
-            Text(''),
+            Container(
+              padding: EdgeInsets.all(8),
+              child: StreamBuilder(
+                stream:
+                     FirebaseFirestore.instance
+                    .collection('groups')
+                    .doc(widget.groupId)
+                    .snapshots(),
+
+                builder: (context, userSnapshot) {
+                  return userSnapshot.hasData
+                      ? ListView.builder(
+                      itemCount: userSnapshot.data.docs.length,
+                      itemBuilder: (context, index) {
+                        //if(userSnapshot.data.docs[index]["file_type"]=="image"){
+                          return ;
+                       // }
+
+                      })
+                      : Center(child: CircularProgressIndicator());
+                },
+              ),
+            ),
           ],
         ),
       ),
