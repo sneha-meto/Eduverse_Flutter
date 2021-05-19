@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:eduverse/Components/textandbutton.dart';
-import 'package:eduverse/Pages/login.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main_page.dart';
@@ -272,6 +270,7 @@ class _TeacherState extends State<Teacher> {
                                 UserHelper.saveRole("teacher");
                                 UserHelper.saveBranch(
                                     _chosenValue.toLowerCase());
+                                addToOfficialGroup(_chosenValue.toLowerCase());
 
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
@@ -319,5 +318,14 @@ class _TeacherState extends State<Teacher> {
     } else {
       _success = false;
     }
+  }
+
+  Future addToOfficialGroup(branch) async {
+    await FirebaseFirestore.instance
+        .collection("groups")
+        .doc("${branch}_official")
+        .update({
+      "members": FieldValue.arrayUnion([_auth.currentUser.uid])
+    }).then((value) => print("added to official"));
   }
 }

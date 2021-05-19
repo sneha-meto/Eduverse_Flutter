@@ -1,3 +1,4 @@
+import 'package:eduverse/Services/database.dart';
 import 'package:eduverse/Utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,25 +10,14 @@ import 'package:eduverse/Utils/subjects.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class Profile extends StatelessWidget {
-  String role;
+  String roleCollection;
   Future getName() async {
-//    String role;
-    String name;
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(_auth.currentUser.uid)
-        .get()
-        .then((value) {
-      role = value.data()["role"] + "s";
-    });
+    var userRoleSnapshot =
+        await DatabaseMethods().getUserRole(_auth.currentUser.uid);
+    roleCollection = userRoleSnapshot.data()["role"] + "s";
 
-    var value = await FirebaseFirestore.instance
-        .collection(role)
-        .doc(_auth.currentUser.uid)
-        .get();
-
-    name = value.data()["first_name"] + " " + value.data()["last_name"];
-    return value;
+    return await DatabaseMethods()
+        .getUserInfo(_auth.currentUser.uid, userRoleSnapshot.data()["role"]);
   }
 
   @override
@@ -48,7 +38,7 @@ class Profile extends StatelessWidget {
             Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(25),
+                  padding: const EdgeInsets.all(15),
                   child: CircleAvatar(
                       backgroundColor: Colors.transparent,
                       radius: 55,
@@ -58,29 +48,12 @@ class Profile extends StatelessWidget {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(bottom: 35),
-                    child: FutureBuilder(
-                      future: getName(),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (snapshot.hasData) {
-                          return Text(
-                              snapshot.data["first_name"] +
-                                  " " +
-                                  snapshot.data["last_name"],
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800));
-                        } else {
-                          return Text('User Name!',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800));
-                        }
-                      },
-                    ),
-                  ),
+                      padding: const EdgeInsets.only(bottom: 30),
+                      child: Text(Constants.myName,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800))),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 15.0),
@@ -107,7 +80,7 @@ class Profile extends StatelessWidget {
                 future: getName(),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
-                    if (role == "teachers") {
+                    if (roleCollection == "teachers") {
                       return FacultyProfileCard(
                         email: snapshot.data["email"],
                         branch: snapshot.data["branch"],
@@ -220,6 +193,28 @@ class FacultyProfileCard extends StatelessWidget {
     }).then((value) => print("subjects added"));
   }
 
+  Future addToGroup(value) async {
+    selectSubjects(value).forEach((element) async {
+      await FirebaseFirestore.instance
+          .collection("groups")
+          .doc(element)
+          .update({
+        "members": FieldValue.arrayUnion([_auth.currentUser.uid])
+      }).then((value) => print("member added"));
+    });
+  }
+
+  Future removeFromGroup(value) async {
+    selectSubjects(value).forEach((element) async {
+      await FirebaseFirestore.instance
+          .collection("groups")
+          .doc(element)
+          .update({
+        "members": FieldValue.arrayRemove([_auth.currentUser.uid])
+      }).then((value) => print("member removed"));
+    });
+  }
+
   Future clearSubjects() async {
     await FirebaseFirestore.instance
         .collection("teachers")
@@ -299,8 +294,10 @@ class FacultyProfileCard extends StatelessWidget {
                             onChanged: (value) {
 //                              selectedItems = value;
                               addSubject(value);
+                              addToGroup(value);
                             },
                             onClear: () {
+                              removeFromGroup(selectedItems);
                               selectedItems.clear();
                               clearSubjects();
                             },

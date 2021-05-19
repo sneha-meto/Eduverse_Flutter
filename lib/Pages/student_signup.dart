@@ -1,7 +1,6 @@
 import 'package:eduverse/Services/user.dart';
 import 'package:flutter/material.dart';
 import 'package:eduverse/Components/textandbutton.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eduverse/Pages/main_page.dart';

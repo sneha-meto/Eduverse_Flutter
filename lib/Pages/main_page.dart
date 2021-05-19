@@ -30,6 +30,8 @@ class _HomePageState extends State<HomePage> {
     Constants.myRole = await UserHelper.getRole();
     Constants.myBranch = await UserHelper.getBranch();
     print(Constants.myName);
+    print(Constants.myRole);
+    print(Constants.myBranch);
   }
 
   @override
