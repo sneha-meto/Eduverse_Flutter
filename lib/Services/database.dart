@@ -53,14 +53,15 @@ class DatabaseMethods {
     message.add(messageData);
   }
 
-  Future addImage(collection, docId, messageData) async {
+  Future addImage(collection, docId, messageData ,String typeSelected) async {
     await FirebaseFirestore.instance
         .collection("groups")
         .doc(docId)
         .update({
-      "images": FieldValue.arrayUnion([messageData])
+      typeSelected: FieldValue.arrayUnion([messageData])
     }).then((messageData) => print("subjects added"));
   }
+
 //
 //  getChats(String chatRoomId) async{
 //    return FirebaseFirestore.instance

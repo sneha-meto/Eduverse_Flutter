@@ -31,47 +31,67 @@ class _ChatScreenState extends State<ChatScreen> {
   List<UploadTask> uploadTasks=List();
   List<File> selectedFiles=List();
   List messages;
+  String extension;
+  String name ;
+  int size ;
   var userRole;
   var user;
   var userName;
   var userNameChat;
   final TextEditingController _messageController = TextEditingController();
-  writeImageUrlToFirestore(imageUrl){
-    Map<String, dynamic> messageData = {
+  writeImageUrlToFirestore(imageUrl,typeSelected,size,name,extension){
+    Map<String, dynamic>messageData = {
       "text": imageUrl,
       "sent_by": Constants.myName,
       "time": DateTime.now(),
-      "file_type":"image"
+      "file_type": typeSelected,
+      "name":name,
+      "size":size,
+      "extension":extension,
     };
-
+    Map<String, dynamic>fileData = {
+      "text": imageUrl,
+      "name": name,
+      "size": size,
+      "extension": extension,
+    };
     DatabaseMethods().addMessage("groups", widget.groupId, messageData);
-    DatabaseMethods().addImage("groups", widget.groupId, imageUrl);
+
+    DatabaseMethods().addImage("groups", widget.groupId, fileData,typeSelected);
+
+
   }
-  saveImageUrlToFirebase(UploadTask task){
+  saveImageUrlToFirebase(UploadTask task,String typeSelected,size,name,extension){
 task.snapshotEvents.listen((snapShot) {
   if(snapShot.state==TaskState.success){
-    snapShot.ref.getDownloadURL().then((imageUrl) => writeImageUrlToFirestore(imageUrl));
+    snapShot.ref.getDownloadURL().then((imageUrl) => writeImageUrlToFirestore(imageUrl,typeSelected,size,name,extension));
+
   }
 });
   }
-  uploadFileToStorage(File file) {
-    UploadTask task=_firebaseStorage.ref().child("images/${DateTime.now().toString()}").putFile(file);
+  uploadFileToStorage(File file,String typeSelected) {
 
+    UploadTask task=_firebaseStorage.ref().child("$typeSelected/${DateTime.now().toString()}").putFile(file);
     return task;
   }
 
- Future selectFileToUpload() async{
+ Future selectFileToUpload(String typeSelected,FileType typeOfFile) async{
    try{
-     FilePickerResult result= await FilePicker.platform.pickFiles(allowMultiple: true,type: FileType.image);
+     FilePickerResult result= await FilePicker.platform.pickFiles(allowMultiple: true,type: typeOfFile);
      if(result!=null){
        selectedFiles.clear();
            result.files.forEach((selectedFile) {
              File file =File(selectedFile.path);
+             name =selectedFile.name;
+              size =selectedFile.size;
+              extension =selectedFile.extension;
+             print(size);
+             print(name);
              selectedFiles.add(file);
            });
            selectedFiles.forEach((file) {
-             final UploadTask task =uploadFileToStorage(file);
-             saveImageUrlToFirebase(task);
+             final UploadTask task =uploadFileToStorage(file,typeSelected);
+             saveImageUrlToFirebase(task,typeSelected,size,name,extension);
              setState(() {
                uploadTasks.add(task);
              });
@@ -162,7 +182,7 @@ task.snapshotEvents.listen((snapShot) {
                       ? ListView.builder(
                           itemCount: userSnapshot.data.docs.length,
                           itemBuilder: (context, index) {
-                            if(userSnapshot.data.docs[index]["file_type"]=="image"){
+                            if(userSnapshot.data.docs[index]["file_type"]=="images"){
                               return userSnapshot.data.docs[index]["sent_by"] ==
                                   Constants.myName
                                   ? Container(
@@ -188,7 +208,7 @@ task.snapshotEvents.listen((snapShot) {
                                     ["sent_by"],
                                   ));
                             }
-                            else{
+                            else if(userSnapshot.data.docs[index]["file_type"]=="text"){
                               return userSnapshot.data.docs[index]["sent_by"] ==
                                   Constants.myName
                                   ? Container(
@@ -213,6 +233,41 @@ task.snapshotEvents.listen((snapShot) {
                                     userName: userSnapshot.data.docs[index]
                                     ["sent_by"],
                                   ));
+                            }
+                            else{
+                              return userSnapshot.data.docs[index]["sent_by"] ==
+                                  Constants.myName
+                                  ? Container(
+                                  color: Colors.transparent,
+                                  child: FileBubble(
+                                    isUser: true,
+                                    fileName: userSnapshot.data.docs[index]
+                                    ["name"],
+                                    time: userSnapshot.data.docs[index]
+                                    ["time"],
+                                    userName: userSnapshot.data.docs[index]
+                                    ["sent_by"],
+                                    fileExtension: userSnapshot.data.docs[index]
+                                    ["extension"],
+                                    fileSize: userSnapshot.data.docs[index]
+                                    ["size"],
+                                  ))
+                                  : Container(
+                                  color: Colors.transparent,
+                                  child: FileBubble(
+                                    isUser: false,
+                                    fileName: userSnapshot.data.docs[index]
+                                    ["name"],
+                                    time: userSnapshot.data.docs[index]
+                                    ["time"],
+                                    userName: userSnapshot.data.docs[index]
+                                    ["sent_by"],
+                                    fileExtension: userSnapshot.data.docs[index]
+                                    ["extension"],
+                                    fileSize: userSnapshot.data.docs[index]
+                                    ["size"],
+                                  ));
+
                             }
                           })
                       : Center(child: CircularProgressIndicator());
@@ -323,20 +378,26 @@ task.snapshotEvents.listen((snapShot) {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-
+                    onTap: (){
+                      selectFileToUpload("materials",FileType.any);
+                    },
                     child: iconCreation(
                         Icons.insert_drive_file, kCyan, 'Material', context),
                   ),
                   SizedBox(
                     width: 40,
                   ),
-                  iconCreation(Icons.assignment, kBlue, 'Assignment', context),
+                  GestureDetector(
+                    onTap: (){
+                      selectFileToUpload("assignments",FileType.any);
+                    },
+                      child: iconCreation(Icons.assignment, kBlue, 'Assignment', context)),
                   SizedBox(
                     width: 40,
                   ),
                   GestureDetector(
                       onTap: (){
-                        selectFileToUpload();
+                        selectFileToUpload("images",FileType.image);
                       },
                       child: iconCreation(Icons.image, kPurple, 'Image', context))
                 ],
@@ -375,8 +436,6 @@ task.snapshotEvents.listen((snapShot) {
     );
   }
 }
-
-
 
 class ChatBubble extends StatelessWidget {
   const ChatBubble({this.isUser, this.messageText, this.time, this.userName});
@@ -486,4 +545,79 @@ class ImageBubble extends StatelessWidget {
     );
   }
 }
+class FileBubble extends StatelessWidget {
+  const FileBubble({this.isUser, this.fileName, this.time, this.userName,this.fileExtension,this.fileSize});
+  final String fileExtension;
+  final bool isUser;
+  final String userName;
+  final String fileName;
+  final int fileSize;
+  final Timestamp time;
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: isUser ? Alignment.bottomRight : Alignment.bottomLeft,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SizedBox(
+          width: 250,
+          child: Bubble(
+            //borderWidth: 20,
+            color:
+            isUser ? kBlue.withOpacity(0.8) : Colors.white.withOpacity(0.1),
+            radius: Radius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isUser ? "" : userName,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    fileName,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    (fileSize/1000).toString()+'KB',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
 
+                  Align(
+                      alignment: Alignment.bottomRight,
+                      child: Column(
+                        children: [
+                          Text(
+
+                            fileExtension.toUpperCase(),
+                            textAlign: TextAlign.right,
+                            style: TextStyle(fontSize: 15.0, color: Colors.white),
+                          ),
+                          Text(
+                            DateFormat.jm().format(time.toDate()),
+                            style: TextStyle(fontSize: 12.0, color: Colors.white),
+                          ),
+                        ],
+                      )),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
