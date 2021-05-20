@@ -1,13 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseMethods {
-//  Future<void> addUserInfo(userData) async {
-//    FirebaseFirestore.instance.collection("users").add(userData).catchError((e) {
-//      print(e.toString());
-//    });
-//  }
-
-  getUserRole(String id) async {
+  Future getUserRole(String id) async {
     return await FirebaseFirestore.instance
         .collection("users")
         .doc(id)
@@ -17,7 +11,7 @@ class DatabaseMethods {
     });
   }
 
-  getUserInfo(String id, String role) async {
+  Future getUserInfo(String id, String role) async {
     return await FirebaseFirestore.instance
         .collection(role + 's')
         .doc(id)
@@ -53,6 +47,7 @@ class DatabaseMethods {
     message.add(messageData);
   }
 
+
   Future addImage(collection, docId, messageData ,String typeSelected) async {
     await FirebaseFirestore.instance
         .collection("groups")
@@ -60,6 +55,22 @@ class DatabaseMethods {
         .update({
       typeSelected: FieldValue.arrayUnion([messageData])
     }).then((messageData) => print("subjects added"));
+  }
+
+
+
+  getNotices(branch) {
+    return FirebaseFirestore.instance
+        .collection("notices")
+        .where("branch", isEqualTo: branch)
+        .snapshots();
+  }
+
+  getTasks(branch) {
+    return FirebaseFirestore.instance
+        .collection("tasks")
+        .where("branch", isEqualTo: branch)
+        .snapshots();
   }
 
 //

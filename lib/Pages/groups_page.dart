@@ -36,10 +36,15 @@ class _GroupsWidgetState extends State<GroupsWidget> {
           ),
         ),
         body: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('groups')
-              .where("branch", isEqualTo: Constants.myBranch)
-              .snapshots(),
+          stream: Constants.myRole == "student"
+              ? FirebaseFirestore.instance
+                  .collection('groups')
+                  .where("branch", isEqualTo: Constants.myBranch)
+                  .snapshots()
+              : FirebaseFirestore.instance
+                  .collection('groups')
+                  .where("members", arrayContains: _auth.currentUser.uid)
+                  .snapshots(),
           builder: (context, userSnapshot) {
             return userSnapshot.hasData
                 ? ListView.builder(

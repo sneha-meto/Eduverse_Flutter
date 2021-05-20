@@ -40,17 +40,20 @@ class _LoginState extends State<Login> {
   );
 
   Future saveUserInfo() async {
-    DocumentSnapshot<Map<String, dynamic>> userRoleSnapshot =
-        await DatabaseMethods().getUserRole(_auth.currentUser.uid);
-    DocumentSnapshot<Map<String, dynamic>> userInfoSnapshot =
-        await DatabaseMethods().getUserInfo(
-            _auth.currentUser.uid, userRoleSnapshot.data()["role"]);
-    await UserHelper.saveRole(userInfoSnapshot.data()["role"]);
-    await UserHelper.saveName(userInfoSnapshot.data()["first_name"] +
-        " " +
-        userInfoSnapshot.data()["last_name"]);
-    await UserHelper.saveBranch(
-        userInfoSnapshot.data()["branch"].toString().toLowerCase());
+    await DatabaseMethods()
+        .getUserRole(_auth.currentUser.uid)
+        .then((userRoleSnapshot) async {
+      await DatabaseMethods()
+          .getUserInfo(_auth.currentUser.uid, userRoleSnapshot.data()["role"])
+          .then((userInfoSnapshot) {
+        UserHelper.saveRole(userInfoSnapshot.data()["role"]);
+        UserHelper.saveName(userInfoSnapshot.data()["first_name"] +
+            " " +
+            userInfoSnapshot.data()["last_name"]);
+        UserHelper.saveBranch(
+            userInfoSnapshot.data()["branch"].toString().toLowerCase());
+      });
+    });
   }
 
   @override
@@ -125,7 +128,7 @@ class _LoginState extends State<Login> {
                                   ))
                                       .user;
                                   if (user != null) {
-                                    saveUserInfo();
+                                    await saveUserInfo();
                                     Navigator.of(context).pushReplacement(
                                         new MaterialPageRoute(
                                             builder: (context) => HomePage()));
