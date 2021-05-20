@@ -66,45 +66,70 @@ class _TabsState extends State<Tabs> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(1.0),
-                    child: Column(
-                      // crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Flexible(
-                          fit: FlexFit.loose,
-                          child: Container(
-                            height: 60,
-                            width: MediaQuery.of(context).size.width,
-                            margin:
-                                EdgeInsets.only(top: 20, left: 20, right: 20),
-                            decoration: new BoxDecoration(
-                              color: kCyan,
-                              border:
-                                  Border.all(color: Colors.black, width: 0.0),
-                              borderRadius:
-                                  new BorderRadius.all(Radius.circular(20)),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Column(
-                                    children: [
-                                      Text('Material 1'),
-                                      Center(child: Text('120 KB')),
-                                    ],
+                    child: StreamBuilder(
+
+                          stream: FirebaseFirestore.instance
+                          .collection('groups')
+                          .doc(widget.groupId)
+                          .snapshots(),
+
+                      builder: (context, userSnapshot) {
+                        return userSnapshot.hasData
+                            ? ListView.builder(
+                            itemCount: userSnapshot.data.docs.length,
+                            itemBuilder: (context, index) {
+                              // imageUrl: userSnapshot.data.docs[index]
+                              // ["text"],
+                              return
+                              Column(
+                                // crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Flexible(
+                                    fit: FlexFit.loose,
+                                    child: Container(
+                                      height: 60,
+                                      width: MediaQuery.of(context).size.width,
+                                      margin:
+                                          EdgeInsets.only(top: 20, left: 20, right: 20),
+                                      decoration: new BoxDecoration(
+                                        color: kCyan,
+                                        border:
+                                            Border.all(color: Colors.black, width: 0.0),
+                                        borderRadius:
+                                            new BorderRadius.all(Radius.circular(20)),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: Column(
+                                              children: [
+                                                Text(  userSnapshot.data.docs[index]
+                                            ["assignments"].toString(),),
+                                                Center(child: Text('120 KB')),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: Text('PDF'),
+                                          )
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Text('PDF'),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                                ],
+                              );
+
+
+
+
+                            })
+                            : Center(child: CircularProgressIndicator());
+                      },
+                    )
+
                   ),
                 ),
               ],
@@ -112,26 +137,10 @@ class _TabsState extends State<Tabs> {
             Text(''),
             Container(
               padding: EdgeInsets.all(8),
-              child: StreamBuilder(
-                stream:
-                     FirebaseFirestore.instance
-                    .collection('groups')
-                    .doc(widget.groupId)
-                    .snapshots(),
+              //child: StreamBuilder<QuerySnapshot>(
+              //  stream: _firebaseFirestore.collection("groups").doc(widget.groupId).snapshots(),
 
-                builder: (context, userSnapshot) {
-                  return userSnapshot.hasData
-                      ? ListView.builder(
-                      itemCount: userSnapshot.data.docs.length,
-                      itemBuilder: (context, index) {
-                        //if(userSnapshot.data.docs[index]["file_type"]=="image"){
-                          return ;
-                       // }
-
-                      })
-                      : Center(child: CircularProgressIndicator());
-                },
-              ),
+             // ),
             ),
           ],
         ),
