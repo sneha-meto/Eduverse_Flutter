@@ -42,6 +42,9 @@ class _SearchPageState extends State<SearchPage> {
 
     Map<String, dynamic> chatRoom = {
       "participants": users,
+      "images": [],
+      "assignments": [],
+      "materials": []
     };
 
     DatabaseMethods().createChat(chatRoom, chatId);

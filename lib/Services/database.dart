@@ -47,17 +47,11 @@ class DatabaseMethods {
     message.add(messageData);
   }
 
-
-  Future addImage(collection, docId, messageData ,String typeSelected) async {
-    await FirebaseFirestore.instance
-        .collection("groups")
-        .doc(docId)
-        .update({
+  Future addFile(collection, docId, messageData, String typeSelected) async {
+    await FirebaseFirestore.instance.collection(collection).doc(docId).update({
       typeSelected: FieldValue.arrayUnion([messageData])
-    }).then((messageData) => print("subjects added"));
+    }).then((messageData) => print("file added"));
   }
-
-
 
   getNotices(branch) {
     return FirebaseFirestore.instance
@@ -70,6 +64,13 @@ class DatabaseMethods {
     return FirebaseFirestore.instance
         .collection("tasks")
         .where("branch", isEqualTo: branch)
+        .snapshots();
+  }
+
+  getChats(collection, groupId) {
+    return FirebaseFirestore.instance
+        .collection(collection)
+        .doc(groupId)
         .snapshots();
   }
 

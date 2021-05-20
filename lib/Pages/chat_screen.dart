@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eduverse/Services/database.dart';
 import 'package:file_picker/file_picker.dart';
@@ -7,12 +6,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:bubble/bubble.dart';
 import 'package:flutter/rendering.dart';
-import 'package:eduverse/Pages/share.dart';
+import 'package:eduverse/Pages/media.dart';
 import 'package:eduverse/Utils/constants.dart';
-import 'package:eduverse/Utils/constants.dart';
-import 'package:intl/intl.dart';
+import 'package:eduverse/Components/chat_bubbles.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen(
@@ -32,103 +29,111 @@ class _ChatScreenState extends State<ChatScreen> {
   List<File> selectedFiles = List();
   List messages;
   String extension;
-  String name ;
-  int size ;
+  String name;
+  int size;
   var userRole;
   var user;
   var userName;
   var userNameChat;
+  String typeSelected;
   final TextEditingController _messageController = TextEditingController();
   final ScrollController scrollController = ScrollController();
 
-  writeImageUrlToFirestore(imageUrl,typeSelected,size,name,extension){
-    Map<String, dynamic>messageData = {
+  writeFileUrlToFirestore(imageUrl, typeSelected, size, name, extension) {
+    Map<String, dynamic> messageData = {
       "text": imageUrl,
       "sent_by": Constants.myName,
       "time": DateTime.now(),
       "file_type": typeSelected,
-      "name":name,
-      "size":size,
-      "extension":extension,
-    };
-    Map<String, dynamic>fileData = {
-      "text": imageUrl,
       "name": name,
       "size": size,
       "extension": extension,
     };
+    Map<String, dynamic> fileData = {
+      "text": imageUrl,
+      "name": name,
+      "size": size,
+      "extension": extension,
+      "time": DateTime.now(),
+    };
 
-
-
-    DatabaseMethods().addMessage("groups", widget.groupId, messageData);
-
-    DatabaseMethods().addImage("groups", widget.groupId, fileData,typeSelected);
-
-
+    if (widget.isGroup) {
+      DatabaseMethods().addMessage("groups", widget.groupId, messageData);
+      DatabaseMethods()
+          .addFile("groups", widget.groupId, fileData, typeSelected);
+    } else {
+      DatabaseMethods().addMessage("chats", widget.groupId, messageData);
+      DatabaseMethods()
+          .addFile("chats", widget.groupId, fileData, typeSelected);
+    }
   }
 
-  saveImageUrlToFirebase(UploadTask task,String typeSelected,size,name,extension){
-task.snapshotEvents.listen((snapShot) {
-  if(snapShot.state==TaskState.success){
-    snapShot.ref.getDownloadURL().then((imageUrl) => writeImageUrlToFirestore(imageUrl,typeSelected,size,name,extension));
-
+  saveFileUrlToFirestore(
+      UploadTask task, String typeSelected, size, name, extension) {
+    task.snapshotEvents.listen((snapShot) {
+      if (snapShot.state == TaskState.success) {
+        snapShot.ref.getDownloadURL().then((imageUrl) =>
+            writeFileUrlToFirestore(
+                imageUrl, typeSelected, size, name, extension));
+      }
+    });
   }
-});
-  }
-  uploadFileToStorage(File file,String typeSelected) {
 
-
-
-
-
-    UploadTask task=_firebaseStorage.ref().child("$typeSelected/${DateTime.now().toString()}").putFile(file);
+  uploadFileToStorage(File file, String typeSelected) {
+    UploadTask task = _firebaseStorage
+        .ref()
+        .child("$typeSelected/${DateTime.now().toString()}")
+        .putFile(file);
     return task;
   }
 
+  Future selectFileToUpload(String typeSelected, FileType typeOfFile) async {
+    try {
+      FilePickerResult result = await FilePicker.platform
+          .pickFiles(allowMultiple: true, type: typeOfFile);
+      if (result != null) {
+        result.files.forEach((selectedFile) {
+          File file = File(selectedFile.path);
+          name = selectedFile.name;
+          size = selectedFile.size;
+          extension = selectedFile.extension;
+          print(size);
+          print(name);
+          selectedFiles.add(file);
+        });
 
- Future selectFileToUpload(String typeSelected,FileType typeOfFile) async{
-   try{
-     FilePickerResult result= await FilePicker.platform.pickFiles(allowMultiple: true,type: typeOfFile);
-     if(result!=null){
-       selectedFiles.clear();
-           result.files.forEach((selectedFile) {
-             File file =File(selectedFile.path);
-             name =selectedFile.name;
-              size =selectedFile.size;
-              extension =selectedFile.extension;
-             print(size);
-             print(name);
-             selectedFiles.add(file);
-           });
-           selectedFiles.forEach((file) {
-             final UploadTask task =uploadFileToStorage(file,typeSelected);
-             saveImageUrlToFirebase(task,typeSelected,size,name,extension);
-             setState(() {
-               uploadTasks.add(task);
-             });
-           });
-     }else{
-       print("user has cancelled");
-     }
-   }catch(e){
-     print(e);
-   }
- }
+        this.typeSelected = typeSelected;
+      } else {
+        print("user has cancelled");
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
+  send(bool isFile) {
+    if (!isFile) {
+      Map<String, dynamic> messageData = {
+        "text": _messageController.text,
+        "sent_by": Constants.myName,
+        "time": DateTime.now(),
+        "file_type": "text"
+      };
+      widget.isGroup
+          ? DatabaseMethods().addMessage("groups", widget.groupId, messageData)
+          : DatabaseMethods().addMessage("chats", widget.groupId, messageData);
 
-  addMessage() {
-    Map<String, dynamic> messageData = {
-      "text": _messageController.text,
-      "sent_by": Constants.myName,
-      "time": DateTime.now(),
-      "file_type": "text"
-    };
-
-    widget.isGroup
-        ? DatabaseMethods().addMessage("groups", widget.groupId, messageData)
-        : DatabaseMethods().addMessage("chats", widget.groupId, messageData);
-
-    _messageController.clear();
+      _messageController.clear();
+    } else {
+      selectedFiles.forEach((file) {
+        final UploadTask task = uploadFileToStorage(file, typeSelected);
+        saveFileUrlToFirestore(task, typeSelected, size, name, extension);
+        setState(() {
+          uploadTasks.add(task);
+        });
+      });
+      selectedFiles.clear();
+    }
   }
 
   @override
@@ -152,9 +157,6 @@ task.snapshotEvents.listen((snapShot) {
                 color: kCyan,
                 borderRadius: BorderRadius.circular(11),
                 shape: BoxShape.rectangle,
-                // image: DecorationImage(
-                //     image: AssetImage('assets/images/sarah.jpg'),
-                //     fit: BoxFit.fill),
               ),
             ),
             Text(widget.name, style: TextStyle(fontSize: 20)),
@@ -166,8 +168,10 @@ task.snapshotEvents.listen((snapShot) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => Tabs(
+                      builder: (context) => ChatMedia(
                             groupId: widget.groupId,
+                            name: widget.name,
+                            isGroup: widget.isGroup,
                           )),
                 );
               },
@@ -209,9 +213,8 @@ task.snapshotEvents.listen((snapShot) {
                           shrinkWrap: true,
                           itemCount: userSnapshot.data.docs.length,
                           itemBuilder: (context, index) {
-
-                            if(userSnapshot.data.docs[index]["file_type"]=="images"){
-
+                            if (userSnapshot.data.docs[index]["file_type"] ==
+                                "images") {
                               return userSnapshot.data.docs[index]["sent_by"] ==
                                       Constants.myName
                                   ? Container(
@@ -226,19 +229,19 @@ task.snapshotEvents.listen((snapShot) {
                                             ["sent_by"],
                                       ))
                                   : Container(
-                                  color: Colors.transparent,
-                                  child: ImageBubble(
-                                    isUser: false,
-                                    imageUrl: userSnapshot.data.docs[index]
-                                    ["text"],
-                                    time: userSnapshot.data.docs[index]
-                                    ["time"],
-                                    userName: userSnapshot.data.docs[index]
-                                    ["sent_by"],
-                                  ));
-                            }
-                            else if(userSnapshot.data.docs[index]["file_type"]=="text"){
-
+                                      color: Colors.transparent,
+                                      child: ImageBubble(
+                                        isUser: false,
+                                        imageUrl: userSnapshot.data.docs[index]
+                                            ["text"],
+                                        time: userSnapshot.data.docs[index]
+                                            ["time"],
+                                        userName: userSnapshot.data.docs[index]
+                                            ["sent_by"],
+                                      ));
+                            } else if (userSnapshot.data.docs[index]
+                                    ["file_type"] ==
+                                "text") {
                               return userSnapshot.data.docs[index]["sent_by"] ==
                                       Constants.myName
                                   ? Container(
@@ -263,41 +266,42 @@ task.snapshotEvents.listen((snapShot) {
                                         userName: userSnapshot.data.docs[index]
                                             ["sent_by"],
                                       ));
-                            }
-                            else{
+                            } else {
                               return userSnapshot.data.docs[index]["sent_by"] ==
-                                  Constants.myName
+                                      Constants.myName
                                   ? Container(
-                                  color: Colors.transparent,
-                                  child: FileBubble(
-                                    isUser: true,
-                                    fileName: userSnapshot.data.docs[index]
-                                    ["name"],
-                                    time: userSnapshot.data.docs[index]
-                                    ["time"],
-                                    userName: userSnapshot.data.docs[index]
-                                    ["sent_by"],
-                                    fileExtension: userSnapshot.data.docs[index]
-                                    ["extension"],
-                                    fileSize: userSnapshot.data.docs[index]
-                                    ["size"],
-                                  ))
+                                      color: Colors.transparent,
+                                      child: FileBubble(
+                                          isUser: true,
+                                          fileName: userSnapshot
+                                              .data.docs[index]["name"],
+                                          time: userSnapshot.data.docs[index]
+                                              ["time"],
+                                          userName: userSnapshot
+                                              .data.docs[index]["sent_by"],
+                                          fileExtension: userSnapshot
+                                              .data.docs[index]["extension"],
+                                          fileSize: userSnapshot
+                                              .data.docs[index]["size"],
+                                          category: userSnapshot
+                                              .data.docs[index]["file_type"]))
                                   : Container(
-                                  color: Colors.transparent,
-                                  child: FileBubble(
-                                    isUser: false,
-                                    fileName: userSnapshot.data.docs[index]
-                                    ["name"],
-                                    time: userSnapshot.data.docs[index]
-                                    ["time"],
-                                    userName: userSnapshot.data.docs[index]
-                                    ["sent_by"],
-                                    fileExtension: userSnapshot.data.docs[index]
-                                    ["extension"],
-                                    fileSize: userSnapshot.data.docs[index]
-                                    ["size"],
-                                  ));
-
+                                      color: Colors.transparent,
+                                      child: FileBubble(
+                                        isUser: false,
+                                        fileName: userSnapshot.data.docs[index]
+                                            ["name"],
+                                        time: userSnapshot.data.docs[index]
+                                            ["time"],
+                                        userName: userSnapshot.data.docs[index]
+                                            ["sent_by"],
+                                        fileExtension: userSnapshot
+                                            .data.docs[index]["extension"],
+                                        fileSize: userSnapshot.data.docs[index]
+                                            ["size"],
+                                        category: userSnapshot.data.docs[index]
+                                            ["file_type"],
+                                      ));
                             }
                           })
                       : Center(child: CircularProgressIndicator());
@@ -318,7 +322,7 @@ task.snapshotEvents.listen((snapShot) {
                 ),
                 GestureDetector(
                   onTap: () {
-                    addMessage();
+                    send(selectedFiles.isNotEmpty);
                   },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(15.0), //or 15.0
@@ -351,14 +355,29 @@ task.snapshotEvents.listen((snapShot) {
           child: Row(
             children: <Widget>[
               SizedBox(width: 8.0),
+              Visibility(
+                visible: selectedFiles.isNotEmpty,
+                child: Row(
+                  children: [
+                    SizedBox(width: 20),
+                    Icon(
+                      Icons.file_copy,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16.0),
                   child: TextField(
+                    readOnly: selectedFiles.isEmpty ? false : true,
                     style: TextStyle(color: Colors.white),
                     controller: _messageController,
                     decoration: InputDecoration(
-                      hintText: 'Type a message',
+                      hintText: selectedFiles.isEmpty
+                          ? 'Type a message'
+                          : "Files Selected",
                       border: InputBorder.none,
                     ),
                   ),
@@ -366,20 +385,30 @@ task.snapshotEvents.listen((snapShot) {
               ),
               IconButton(
                 onPressed: () {
-                  showModalBottomSheet(
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      context: context,
-                      builder: (builder) => bottomSheet(context));
+                  selectedFiles.isNotEmpty
+                      ? setState(() {
+                          selectedFiles.clear();
+                        })
+                      : showModalBottomSheet(
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          context: context,
+                          builder: (builder) => bottomSheet(context));
                 },
-                icon: Transform.rotate(
-                  angle: 3.8,
-                  child: Icon(
-                    Icons.attach_file,
-                    size: 25.0,
-                    color: Colors.grey,
-                  ),
-                ),
+                icon: selectedFiles.isEmpty
+                    ? Transform.rotate(
+                        angle: 3.8,
+                        child: Icon(
+                          Icons.attach_file,
+                          size: 25.0,
+                          color: Colors.grey,
+                        ),
+                      )
+                    : Icon(
+                        Icons.close,
+                        size: 25.0,
+                        color: Colors.grey,
+                      ),
               ),
               SizedBox(width: 8.0),
             ],
@@ -409,9 +438,8 @@ task.snapshotEvents.listen((snapShot) {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-
-                    onTap: (){
-                      selectFileToUpload("materials",FileType.any);
+                    onTap: () {
+                      selectFileToUpload("materials", FileType.any);
                     },
                     child: iconCreation(
                         Icons.insert_drive_file, kCyan, 'Material', context),
@@ -420,19 +448,17 @@ task.snapshotEvents.listen((snapShot) {
                     width: 40,
                   ),
                   GestureDetector(
-                    onTap: (){
-                      selectFileToUpload("assignments",FileType.any);
-                    },
-                      child: iconCreation(Icons.assignment, kBlue, 'Assignment', context)),
+                      onTap: () {
+                        selectFileToUpload("assignments", FileType.any);
+                      },
+                      child: iconCreation(
+                          Icons.assignment, kBlue, 'Assignment', context)),
                   SizedBox(
                     width: 40,
                   ),
                   GestureDetector(
-
-                      onTap: (){
-                        selectFileToUpload("images",FileType.image);
-
-
+                      onTap: () {
+                        selectFileToUpload("images", FileType.image);
                       },
                       child:
                           iconCreation(Icons.image, kPurple, 'Image', context))
@@ -469,192 +495,6 @@ task.snapshotEvents.listen((snapShot) {
           style: TextStyle(color: Colors.grey),
         )
       ],
-    );
-  }
-}
-
-class ChatBubble extends StatelessWidget {
-  const ChatBubble({this.isUser, this.messageText, this.time, this.userName});
-  final bool isUser;
-  final String userName;
-  final String messageText;
-  final Timestamp time;
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: isUser ? Alignment.bottomRight : Alignment.bottomLeft,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SizedBox(
-          width: 220,
-          child: Bubble(
-            nip: isUser ? BubbleNip.rightBottom : BubbleNip.leftBottom,
-            borderWidth: 20,
-            color:
-                isUser ? kBlue.withOpacity(0.8) : Colors.white.withOpacity(0.1),
-            radius: Radius.circular(15),
-            nipRadius: 0,
-            nipHeight: 15,
-            nipWidth: 1,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isUser ? "" : userName,
-                    style: TextStyle(
-                      color: kCyan,
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(messageText,
-                      style: TextStyle(fontSize: 15.0, color: Colors.white)),
-                  Align(
-                      alignment: Alignment.bottomRight,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          DateFormat.jm().format(time.toDate()),
-                          style: TextStyle(fontSize: 12.0, color: Colors.white),
-                        ),
-                      )),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ImageBubble extends StatelessWidget {
-  const ImageBubble({this.isUser, this.imageUrl, this.time, this.userName});
-  final bool isUser;
-  final String userName;
-  final String imageUrl;
-  final Timestamp time;
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: isUser ? Alignment.bottomRight : Alignment.bottomLeft,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SizedBox(
-          width: 220,
-          child: Bubble(
-            //borderWidth: 20,
-            color:
-                isUser ? kBlue.withOpacity(0.8) : Colors.white.withOpacity(0.1),
-            radius: Radius.circular(8),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isUser ? "" : userName,
-                    style: TextStyle(
-                      color: kCyan,
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Image.network(imageUrl),
-                  Align(
-                      alignment: Alignment.bottomRight,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          DateFormat.jm().format(time.toDate()),
-                          style: TextStyle(fontSize: 12.0, color: Colors.white),
-                        ),
-                      )),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class FileBubble extends StatelessWidget {
-  const FileBubble({this.isUser, this.fileName, this.time, this.userName,this.fileExtension,this.fileSize});
-  final String fileExtension;
-  final bool isUser;
-  final String userName;
-  final String fileName;
-  final int fileSize;
-  final Timestamp time;
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: isUser ? Alignment.bottomRight : Alignment.bottomLeft,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SizedBox(
-          width: 250,
-          child: Bubble(
-            //borderWidth: 20,
-            color:
-            isUser ? kBlue.withOpacity(0.8) : Colors.white.withOpacity(0.1),
-            radius: Radius.circular(8),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isUser ? "" : userName,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    fileName,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    (fileSize/1000).toString()+'KB',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  Align(
-                      alignment: Alignment.bottomRight,
-                      child: Column(
-                        children: [
-                          Text(
-
-                            fileExtension.toUpperCase(),
-                            textAlign: TextAlign.right,
-                            style: TextStyle(fontSize: 15.0, color: Colors.white),
-                          ),
-                          Text(
-                            DateFormat.jm().format(time.toDate()),
-                            style: TextStyle(fontSize: 12.0, color: Colors.white),
-                          ),
-                        ],
-                      )),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

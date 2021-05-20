@@ -3,7 +3,7 @@ import 'package:eduverse/Pages/onboarding.dart';
 import 'package:eduverse/Services/database.dart';
 import 'package:eduverse/Services/user.dart';
 import 'package:flutter/material.dart';
-import 'package:eduverse/Components/textandbutton.dart';
+import 'package:eduverse/Components/textbox_button.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
