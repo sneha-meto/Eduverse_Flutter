@@ -10,6 +10,9 @@ import 'package:flutter/rendering.dart';
 import 'package:eduverse/Pages/media.dart';
 import 'package:eduverse/Utils/constants.dart';
 import 'package:eduverse/Components/chat_bubbles.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen(
@@ -38,7 +41,20 @@ class _ChatScreenState extends State<ChatScreen> {
   String typeSelected;
   final TextEditingController _messageController = TextEditingController();
   final ScrollController scrollController = ScrollController();
-
+  downloader(String fileUrl,String fileName)async{
+    final status= await Permission.storage.request();
+    if(status.isGranted){
+      final externalDir=await getExternalStorageDirectory();
+      await FlutterDownloader.enqueue(url: fileUrl,
+        savedDir: externalDir.path,
+        fileName: fileName,
+        showNotification: true,
+        openFileFromNotification: true,
+      );
+    }else{
+      print("Permission Denied");
+    }
+  }
   writeFileUrlToFirestore(imageUrl, typeSelected, size, name, extension) {
     Map<String, dynamic> messageData = {
       "text": imageUrl,
@@ -119,11 +135,14 @@ class _ChatScreenState extends State<ChatScreen> {
         "time": DateTime.now(),
         "file_type": "text"
       };
-      widget.isGroup
-          ? DatabaseMethods().addMessage("groups", widget.groupId, messageData)
-          : DatabaseMethods().addMessage("chats", widget.groupId, messageData);
+      if(_messageController.text.isNotEmpty) {
+        widget.isGroup ? DatabaseMethods().addMessage(
+            "groups", widget.groupId, messageData)
+            : DatabaseMethods().addMessage(
+            "chats", widget.groupId, messageData);
 
-      _messageController.clear();
+        _messageController.clear();
+      }
     } else {
       selectedFiles.forEach((file) {
         final UploadTask task = uploadFileToStorage(file, typeSelected);
@@ -230,14 +249,19 @@ class _ChatScreenState extends State<ChatScreen> {
                                       ))
                                   : Container(
                                       color: Colors.transparent,
-                                      child: ImageBubble(
-                                        isUser: false,
-                                        imageUrl: userSnapshot.data.docs[index]
-                                            ["text"],
-                                        time: userSnapshot.data.docs[index]
-                                            ["time"],
-                                        userName: userSnapshot.data.docs[index]
-                                            ["sent_by"],
+                                      child: GestureDetector(
+                                        onTap: (){
+                                          downloader(userSnapshot.data.docs[index]["text"],userSnapshot.data.docs[index]["name"]);
+                                        },
+                                        child: ImageBubble(
+                                          isUser: false,
+                                          imageUrl: userSnapshot.data.docs[index]
+                                              ["text"],
+                                          time: userSnapshot.data.docs[index]
+                                              ["time"],
+                                          userName: userSnapshot.data.docs[index]
+                                              ["sent_by"],
+                                        ),
                                       ));
                             } else if (userSnapshot.data.docs[index]
                                     ["file_type"] ==
@@ -273,6 +297,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                       color: Colors.transparent,
                                       child: FileBubble(
                                           isUser: true,
+                                          fileLink: userSnapshot
+                                              .data.docs[index]["text"],
                                           fileName: userSnapshot
                                               .data.docs[index]["name"],
                                           time: userSnapshot.data.docs[index]
@@ -287,20 +313,27 @@ class _ChatScreenState extends State<ChatScreen> {
                                               .data.docs[index]["file_type"]))
                                   : Container(
                                       color: Colors.transparent,
-                                      child: FileBubble(
-                                        isUser: false,
-                                        fileName: userSnapshot.data.docs[index]
-                                            ["name"],
-                                        time: userSnapshot.data.docs[index]
-                                            ["time"],
-                                        userName: userSnapshot.data.docs[index]
-                                            ["sent_by"],
-                                        fileExtension: userSnapshot
-                                            .data.docs[index]["extension"],
-                                        fileSize: userSnapshot.data.docs[index]
-                                            ["size"],
-                                        category: userSnapshot.data.docs[index]
-                                            ["file_type"],
+                                      child: GestureDetector(
+                                        onTap: () {
+                                         downloader(userSnapshot.data.docs[index]["text"],userSnapshot.data.docs[index]["name"]);
+                                        },
+                                        child: FileBubble(
+                                          isUser: false,
+                                          fileLink: userSnapshot
+                                              .data.docs[index]["text"],
+                                          fileName: userSnapshot.data.docs[index]
+                                              ["name"],
+                                          time: userSnapshot.data.docs[index]
+                                              ["time"],
+                                          userName: userSnapshot.data.docs[index]
+                                              ["sent_by"],
+                                          fileExtension: userSnapshot
+                                              .data.docs[index]["extension"],
+                                          fileSize: userSnapshot.data.docs[index]
+                                              ["size"],
+                                          category: userSnapshot.data.docs[index]
+                                              ["file_type"],
+                                        ),
                                       ));
                             }
                           })

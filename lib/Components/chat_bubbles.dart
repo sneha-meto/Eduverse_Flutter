@@ -124,13 +124,15 @@ class ImageBubble extends StatelessWidget {
 
 class FileBubble extends StatelessWidget {
   const FileBubble(
+
       {this.isUser,
-      this.fileName,
-      this.time,
-      this.userName,
-      this.fileExtension,
-      this.fileSize,
-      this.category});
+        this.fileLink,
+        this.fileName,
+        this.time,
+        this.userName,
+        this.fileExtension,
+        this.fileSize,
+        this.category});
   final String fileExtension;
   final bool isUser;
   final String userName;
@@ -138,7 +140,7 @@ class FileBubble extends StatelessWidget {
   final int fileSize;
   final Timestamp time;
   final String category;
-
+  final String fileLink;
   String getSize(int size) {
     double mb = size / (1000 * 1000);
     double kb = size / 1000;
@@ -160,7 +162,7 @@ class FileBubble extends StatelessWidget {
             nip: isUser ? BubbleNip.rightBottom : BubbleNip.leftBottom,
             borderWidth: 20,
             color:
-                isUser ? kBlue.withOpacity(0.8) : Colors.white.withOpacity(0.1),
+            isUser ? kBlue.withOpacity(0.8) : Colors.white.withOpacity(0.1),
             radius: Radius.circular(15),
             nipRadius: 0,
             nipHeight: 15,

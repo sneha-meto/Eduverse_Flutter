@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'Pages/login.dart';
@@ -15,6 +16,10 @@ import 'Pages/onboarding.dart';
 void main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   WidgetsFlutterBinding.ensureInitialized();
+
+  await FlutterDownloader.initialize(
+      debug: true
+  );
   var prefs = await SharedPreferences.getInstance();
   // var isLoggedIn = (prefs.getBool('isLoggedIn') == null) ??    true;
   var boolKey = 'isFirstTime';
