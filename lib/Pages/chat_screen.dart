@@ -10,9 +10,6 @@ import 'package:flutter/rendering.dart';
 import 'package:eduverse/Pages/media.dart';
 import 'package:eduverse/Utils/constants.dart';
 import 'package:eduverse/Components/chat_bubbles.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen(
@@ -25,9 +22,9 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
   List<UploadTask> uploadTasks = List();
   List<File> selectedFiles = List();
   List messages;
@@ -39,22 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
   var userName;
   var userNameChat;
   String typeSelected;
-  final TextEditingController _messageController = TextEditingController();
-  final ScrollController scrollController = ScrollController();
-  downloader(String fileUrl,String fileName)async{
-    final status= await Permission.storage.request();
-    if(status.isGranted){
-      final externalDir=await getExternalStorageDirectory();
-      await FlutterDownloader.enqueue(url: fileUrl,
-        savedDir: externalDir.path,
-        fileName: fileName,
-        showNotification: true,
-        openFileFromNotification: true,
-      );
-    }else{
-      print("Permission Denied");
-    }
-  }
+
   writeFileUrlToFirestore(imageUrl, typeSelected, size, name, extension) {
     Map<String, dynamic> messageData = {
       "text": imageUrl,
@@ -135,11 +117,12 @@ class _ChatScreenState extends State<ChatScreen> {
         "time": DateTime.now(),
         "file_type": "text"
       };
-      if(_messageController.text.isNotEmpty) {
-        widget.isGroup ? DatabaseMethods().addMessage(
-            "groups", widget.groupId, messageData)
-            : DatabaseMethods().addMessage(
-            "chats", widget.groupId, messageData);
+      if (_messageController.text.isNotEmpty) {
+        widget.isGroup
+            ? DatabaseMethods()
+                .addMessage("groups", widget.groupId, messageData)
+            : DatabaseMethods()
+                .addMessage("chats", widget.groupId, messageData);
 
         _messageController.clear();
       }
@@ -194,10 +177,12 @@ class _ChatScreenState extends State<ChatScreen> {
                           )),
                 );
               },
-              icon: Icon(Icons.perm_media))
+              icon: Icon(Icons.perm_media)),
         ],
       ),
-      body: Column(
+      body:
+//      Stack(children: [
+          Column(
         children: [
           Expanded(
             child: Padding(
@@ -250,17 +235,15 @@ class _ChatScreenState extends State<ChatScreen> {
                                   : Container(
                                       color: Colors.transparent,
                                       child: GestureDetector(
-                                        onTap: (){
-                                          downloader(userSnapshot.data.docs[index]["text"],userSnapshot.data.docs[index]["name"]);
-                                        },
+                                        onTap: () {},
                                         child: ImageBubble(
                                           isUser: false,
-                                          imageUrl: userSnapshot.data.docs[index]
-                                              ["text"],
+                                          imageUrl: userSnapshot
+                                              .data.docs[index]["text"],
                                           time: userSnapshot.data.docs[index]
                                               ["time"],
-                                          userName: userSnapshot.data.docs[index]
-                                              ["sent_by"],
+                                          userName: userSnapshot
+                                              .data.docs[index]["sent_by"],
                                         ),
                                       ));
                             } else if (userSnapshot.data.docs[index]
@@ -313,28 +296,24 @@ class _ChatScreenState extends State<ChatScreen> {
                                               .data.docs[index]["file_type"]))
                                   : Container(
                                       color: Colors.transparent,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                         downloader(userSnapshot.data.docs[index]["text"],userSnapshot.data.docs[index]["name"]);
-                                        },
-                                        child: FileBubble(
-                                          isUser: false,
-                                          fileLink: userSnapshot
-                                              .data.docs[index]["text"],
-                                          fileName: userSnapshot.data.docs[index]
-                                              ["name"],
-                                          time: userSnapshot.data.docs[index]
-                                              ["time"],
-                                          userName: userSnapshot.data.docs[index]
-                                              ["sent_by"],
-                                          fileExtension: userSnapshot
-                                              .data.docs[index]["extension"],
-                                          fileSize: userSnapshot.data.docs[index]
-                                              ["size"],
-                                          category: userSnapshot.data.docs[index]
-                                              ["file_type"],
-                                        ),
-                                      ));
+                                      child: FileBubble(
+                                        isUser: false,
+                                        fileLink: userSnapshot.data.docs[index]
+                                            ["text"],
+                                        fileName: userSnapshot.data.docs[index]
+                                            ["name"],
+                                        time: userSnapshot.data.docs[index]
+                                            ["time"],
+                                        userName: userSnapshot.data.docs[index]
+                                            ["sent_by"],
+                                        fileExtension: userSnapshot
+                                            .data.docs[index]["extension"],
+                                        fileSize: userSnapshot.data.docs[index]
+                                            ["size"],
+                                        category: userSnapshot.data.docs[index]
+                                            ["file_type"],
+                                      ),
+                                    );
                             }
                           })
                       : Center(child: CircularProgressIndicator());
@@ -375,6 +354,18 @@ class _ChatScreenState extends State<ChatScreen> {
           )
         ],
       ),
+//        Positioned(
+//          bottom: 0,
+//          child: SnackBar(
+//            content: Text(progressString),
+//            shape:
+//                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+//            margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+//            behavior: SnackBarBehavior.floating,
+//          ),
+//        )
+//      ]
+//    ),
     );
   }
 

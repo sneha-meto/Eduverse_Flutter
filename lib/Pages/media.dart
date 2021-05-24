@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:eduverse/Utils/constants.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:dio/dio.dart';
 
 class ChatMedia extends StatefulWidget {
   const ChatMedia(
@@ -141,9 +143,60 @@ class _ChatMediaState extends State<ChatMedia> {
   }
 }
 
-class MediaTile extends StatelessWidget {
+class MediaTile extends StatefulWidget {
   MediaTile({this.file});
   final file;
+
+  @override
+  _MediaTileState createState() => _MediaTileState();
+}
+
+class _MediaTileState extends State<MediaTile> {
+  bool downloading = false;
+  String progressString = "";
+  double downloadProgress = 0;
+  final snackBar = SnackBar(
+    content: Text(
+      "Download Completed",
+      textAlign: TextAlign.center,
+    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+    margin: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+    behavior: SnackBarBehavior.floating,
+    backgroundColor: kPurple,
+  );
+
+  Future<void> downloadFile(fileUrl, fileName) async {
+    Dio dio = Dio();
+    final status = await Permission.storage.request();
+    if (status.isGranted) {
+      try {
+//        var dir = await getExternalStorageDirectory();
+
+        await dio.download(fileUrl, "/storage/emulated/0/Download/" + fileName,
+            onReceiveProgress: (rec, total) {
+          print("Rec: $rec , Total: $total");
+
+          setState(() {
+            downloading = true;
+            progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
+            downloadProgress = (rec / total);
+          });
+        });
+      } catch (e) {
+        print(e);
+      }
+
+      setState(() {
+        downloading = false;
+        progressString = "Completed";
+      });
+      print("Download completed");
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      print("Permission Denied");
+    }
+  }
 
   String getSize(int size) {
     double mb = size / (1000 * 1000);
@@ -166,15 +219,31 @@ class MediaTile extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(file["name"],
+                Text(widget.file["name"],
                     style: TextStyle(color: Colors.white, fontSize: 16)),
-                Text(file["extension"].toString().toUpperCase(),
-                    style: TextStyle(color: Colors.white70, fontSize: 16))
+                Row(
+                  children: [
+                    Text(widget.file["extension"].toString().toUpperCase(),
+                        style: TextStyle(color: Colors.white70, fontSize: 16)),
+                    SizedBox(width: 10),
+                    InkWell(
+                      child: Icon(Icons.file_download, color: Colors.white),
+                      onTap: () {
+                        downloadFile(widget.file["text"], widget.file["name"]);
+                      },
+                    ),
+                  ],
+                )
               ],
             ),
             Text(
-                "${getSize(file["size"])}  •  ${DateFormat("dd-MM-yy").format(file["time"].toDate())}",
-                style: TextStyle(color: Colors.white70, fontSize: 14))
+                "${getSize(widget.file["size"])}  •  ${DateFormat("dd-MM-yy").format(widget.file["time"].toDate())}",
+                style: TextStyle(color: Colors.white70, fontSize: 14)),
+            SizedBox(height: 8),
+            LinearProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(kCyan),
+                backgroundColor: Colors.white70,
+                value: downloadProgress),
           ],
         ),
         decoration: BoxDecoration(
