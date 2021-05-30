@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eduverse/Pages/media_view.dart';
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/painting.dart';
@@ -68,11 +69,14 @@ class ChatBubble extends StatelessWidget {
 }
 
 class ImageBubble extends StatelessWidget {
-  const ImageBubble({this.isUser, this.imageUrl, this.time, this.userName});
+  const ImageBubble(
+      {this.isUser, this.imageUrl, this.time, this.userName, this.fileName});
   final bool isUser;
   final String userName;
   final String imageUrl;
   final Timestamp time;
+  final String fileName;
+
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -105,7 +109,23 @@ class ImageBubble extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       )),
-                  Image.network(imageUrl),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MediaView(
+                                    imgUrl: imageUrl,
+                                    user: userName,
+                                    sentAt: time.toDate(),
+                                    fileName: fileName,
+                                  )),
+                        );
+                      },
+                      child: Image.network(imageUrl)),
                   Align(
                       alignment: Alignment.bottomRight,
                       child: Padding(
@@ -206,7 +226,7 @@ class _FileBubbleState extends State<FileBubble> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         if (!widget.isUser) {
           downloadFile(widget.fileLink, widget.fileName);

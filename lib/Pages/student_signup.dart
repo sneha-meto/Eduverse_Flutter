@@ -139,7 +139,7 @@ class _StudentState extends State<Student> {
                                   items: <String>[
                                     'IT',
                                     'CS',
-                                    'ELECTRONICS',
+                                    'EC',
                                   ].map<DropdownMenuItem<String>>(
                                       (String value) {
                                     return DropdownMenuItem<String>(

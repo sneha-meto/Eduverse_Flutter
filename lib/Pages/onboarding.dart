@@ -25,7 +25,7 @@ class LaunchScreen extends StatelessWidget {
                 height: 180,
               )),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 45),
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 30),
             width: double.infinity,
             height: double.infinity,
             child: Column(

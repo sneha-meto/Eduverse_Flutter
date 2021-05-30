@@ -10,6 +10,7 @@ import 'package:flutter/rendering.dart';
 import 'package:eduverse/Pages/media.dart';
 import 'package:eduverse/Utils/constants.dart';
 import 'package:eduverse/Components/chat_bubbles.dart';
+import 'package:eduverse/Pages/media_view.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen(
@@ -53,6 +54,7 @@ class _ChatScreenState extends State<ChatScreen> {
       "size": size,
       "extension": extension,
       "time": DateTime.now(),
+      "sent_by": Constants.myName,
     };
 
     if (widget.isGroup) {
@@ -219,101 +221,56 @@ class _ChatScreenState extends State<ChatScreen> {
                           itemBuilder: (context, index) {
                             if (userSnapshot.data.docs[index]["file_type"] ==
                                 "images") {
-                              return userSnapshot.data.docs[index]["sent_by"] ==
-                                      Constants.myName
-                                  ? Container(
-                                      color: Colors.transparent,
-                                      child: ImageBubble(
-                                        isUser: true,
-                                        imageUrl: userSnapshot.data.docs[index]
-                                            ["text"],
-                                        time: userSnapshot.data.docs[index]
-                                            ["time"],
-                                        userName: userSnapshot.data.docs[index]
-                                            ["sent_by"],
-                                      ))
-                                  : Container(
-                                      color: Colors.transparent,
-                                      child: GestureDetector(
-                                        onTap: () {},
-                                        child: ImageBubble(
-                                          isUser: false,
-                                          imageUrl: userSnapshot
-                                              .data.docs[index]["text"],
-                                          time: userSnapshot.data.docs[index]
-                                              ["time"],
-                                          userName: userSnapshot
-                                              .data.docs[index]["sent_by"],
-                                        ),
-                                      ));
+                              return Container(
+                                  color: Colors.transparent,
+                                  child: ImageBubble(
+                                    isUser: userSnapshot.data.docs[index]
+                                            ["sent_by"] ==
+                                        Constants.myName,
+                                    imageUrl: userSnapshot.data.docs[index]
+                                        ["text"],
+                                    time: userSnapshot.data.docs[index]["time"],
+                                    userName: userSnapshot.data.docs[index]
+                                        ["sent_by"],
+                                    fileName: userSnapshot.data.docs[index]
+                                        ["name"],
+                                  ));
                             } else if (userSnapshot.data.docs[index]
                                     ["file_type"] ==
                                 "text") {
-                              return userSnapshot.data.docs[index]["sent_by"] ==
-                                      Constants.myName
-                                  ? Container(
-                                      color: Colors.transparent,
-                                      child: ChatBubble(
-                                        isUser: true,
-                                        messageText: userSnapshot
-                                            .data.docs[index]["text"],
-                                        time: userSnapshot.data.docs[index]
-                                            ["time"],
-                                        userName: userSnapshot.data.docs[index]
-                                            ["sent_by"],
-                                      ))
-                                  : Container(
-                                      color: Colors.transparent,
-                                      child: ChatBubble(
-                                        isUser: false,
-                                        messageText: userSnapshot
-                                            .data.docs[index]["text"],
-                                        time: userSnapshot.data.docs[index]
-                                            ["time"],
-                                        userName: userSnapshot.data.docs[index]
-                                            ["sent_by"],
-                                      ));
+                              return Container(
+                                  color: Colors.transparent,
+                                  child: ChatBubble(
+                                    isUser: userSnapshot.data.docs[index]
+                                            ["sent_by"] ==
+                                        Constants.myName,
+                                    messageText: userSnapshot.data.docs[index]
+                                        ["text"],
+                                    time: userSnapshot.data.docs[index]["time"],
+                                    userName: userSnapshot.data.docs[index]
+                                        ["sent_by"],
+                                  ));
                             } else {
-                              return userSnapshot.data.docs[index]["sent_by"] ==
-                                      Constants.myName
-                                  ? Container(
-                                      color: Colors.transparent,
-                                      child: FileBubble(
-                                          isUser: true,
-                                          fileLink: userSnapshot
-                                              .data.docs[index]["text"],
-                                          fileName: userSnapshot
-                                              .data.docs[index]["name"],
-                                          time: userSnapshot.data.docs[index]
-                                              ["time"],
-                                          userName: userSnapshot
-                                              .data.docs[index]["sent_by"],
-                                          fileExtension: userSnapshot
-                                              .data.docs[index]["extension"],
-                                          fileSize: userSnapshot
-                                              .data.docs[index]["size"],
-                                          category: userSnapshot
-                                              .data.docs[index]["file_type"]))
-                                  : Container(
-                                      color: Colors.transparent,
-                                      child: FileBubble(
-                                        isUser: false,
-                                        fileLink: userSnapshot.data.docs[index]
-                                            ["text"],
-                                        fileName: userSnapshot.data.docs[index]
-                                            ["name"],
-                                        time: userSnapshot.data.docs[index]
-                                            ["time"],
-                                        userName: userSnapshot.data.docs[index]
-                                            ["sent_by"],
-                                        fileExtension: userSnapshot
-                                            .data.docs[index]["extension"],
-                                        fileSize: userSnapshot.data.docs[index]
-                                            ["size"],
-                                        category: userSnapshot.data.docs[index]
-                                            ["file_type"],
-                                      ),
-                                    );
+                              return Container(
+                                  color: Colors.transparent,
+                                  child: FileBubble(
+                                      isUser: userSnapshot.data.docs[index]
+                                              ["sent_by"] ==
+                                          Constants.myName,
+                                      fileLink: userSnapshot.data.docs[index]
+                                          ["text"],
+                                      fileName: userSnapshot.data.docs[index]
+                                          ["name"],
+                                      time: userSnapshot.data.docs[index]
+                                          ["time"],
+                                      userName: userSnapshot.data.docs[index]
+                                          ["sent_by"],
+                                      fileExtension: userSnapshot
+                                          .data.docs[index]["extension"],
+                                      fileSize: userSnapshot.data.docs[index]
+                                          ["size"],
+                                      category: userSnapshot.data.docs[index]
+                                          ["file_type"]));
                             }
                           })
                       : Center(child: CircularProgressIndicator());

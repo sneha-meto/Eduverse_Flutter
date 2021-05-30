@@ -138,7 +138,7 @@ class _TeacherState extends State<Teacher> {
                                   items: <String>[
                                     'IT',
                                     'CS',
-                                    'ELECTRONICS',
+                                    'EC',
                                   ].map<DropdownMenuItem<String>>(
                                       (String value) {
                                     return DropdownMenuItem<String>(

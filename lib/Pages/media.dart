@@ -5,6 +5,7 @@ import 'package:eduverse/Utils/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:dio/dio.dart';
+import 'package:eduverse/Pages/media_view.dart';
 
 class ChatMedia extends StatefulWidget {
   const ChatMedia(
@@ -130,11 +131,29 @@ class _ChatMediaState extends State<ChatMedia> {
                       mainAxisSpacing: 2),
                   itemCount: snapshot.data["images"].length,
                   itemBuilder: (context, i) {
-                    return Container(
-                        child: Image.network(
-                      snapshot.data["images"][i]["text"],
-                      fit: BoxFit.cover,
-                    ));
+                    return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MediaView(
+                                      imgUrl: snapshot.data["images"][i]
+                                          ["text"],
+                                      user: snapshot.data["images"][i]
+                                              ["sent_by"] ??
+                                          "User Name",
+                                      sentAt: snapshot.data["images"][i]["time"]
+                                          .toDate(),
+                                      fileName: snapshot.data["images"][i]
+                                          ["name"],
+                                    )),
+                          );
+                        },
+                        child: Container(
+                            child: Image.network(
+                          snapshot.data["images"][i]["text"],
+                          fit: BoxFit.cover,
+                        )));
                   })
               : Center(child: CircularProgressIndicator());
         },

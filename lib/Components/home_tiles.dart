@@ -74,7 +74,7 @@ class NoticeTile extends StatelessWidget {
               Text(notice["faculty"],
                   style: TextStyle(fontWeight: FontWeight.bold)),
               Text(
-                  '${DateFormat("h:mma").format(notice["created"].toDate())}, ${DateFormat("dd-MM-yy").format(notice["created"].toDate())}'),
+                  '${DateFormat("h:mm a").format(notice["created"].toDate())}, ${DateFormat("dd-MM-yy").format(notice["created"].toDate())}'),
             ],
           ),
           Text(notice["notice"]),
