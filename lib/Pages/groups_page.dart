@@ -28,6 +28,7 @@ class _GroupsWidgetState extends State<GroupsWidget> {
           ),
           titleSpacing: 0,
           elevation: 0,
+          automaticallyImplyLeading: false,
         ),
         body: StreamBuilder(
           stream: Constants.myRole == "student"

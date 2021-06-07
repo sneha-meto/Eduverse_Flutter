@@ -66,9 +66,11 @@ class ChatNameCard extends StatelessWidget {
                 //     fit: BoxFit.fill),
               ),
             ),
-            Text(
-              name,
-              style: TextStyle(color: Colors.white, fontSize: 15),
+            Flexible(
+              child: Text(
+                name,
+                style: TextStyle(color: Colors.white, fontSize: 15),
+              ),
             )
           ],
         ),

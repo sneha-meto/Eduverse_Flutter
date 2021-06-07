@@ -413,17 +413,17 @@ class _HomeWidgetState extends State<HomeWidget> {
                             ScheduleTile(
                               time: "09:00 - 10:00",
                               sub: subArray[0],
-                              subFull: subjects[subArray[0]],
+                              subFull: subjectNames[subArray[0]],
                             ),
                             ScheduleTile(
                               time: "10:00 - 11:00",
                               sub: subArray[1],
-                              subFull: subjects[subArray[1]],
+                              subFull: subjectNames[subArray[1]],
                             ),
                             ScheduleTile(
                               time: "11:00 - 12:00",
                               sub: subArray[2],
-                              subFull: subjects[subArray[2]],
+                              subFull: subjectNames[subArray[2]],
                             ),
                             ScheduleTile(
                               time: "12:00 - 13:00",
@@ -433,17 +433,17 @@ class _HomeWidgetState extends State<HomeWidget> {
                             ScheduleTile(
                               time: "13:00 - 14:00",
                               sub: subArray[3],
-                              subFull: subjects[subArray[3]],
+                              subFull: subjectNames[subArray[3]],
                             ),
                             ScheduleTile(
                               time: "14:00 - 15:00",
                               sub: subArray[4],
-                              subFull: subjects[subArray[4]],
+                              subFull: subjectNames[subArray[4]],
                             ),
                             ScheduleTile(
                               time: "15:00 - 16:00",
                               sub: subArray[5],
-                              subFull: subjects[subArray[5]],
+                              subFull: subjectNames[subArray[5]],
                             ),
                           ]),
                         );

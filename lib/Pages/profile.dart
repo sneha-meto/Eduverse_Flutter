@@ -216,12 +216,7 @@ class _ProfileState extends State<Profile> {
                       );
                     }
                   } else
-                    return StudentProfileCard(
-                        email: "not found",
-                        branch: "not found",
-                        year: "not found",
-                        phone: "not found",
-                        register: "not found");
+                    return Center(child: Text("no data found"));
                 })
           ],
         ),

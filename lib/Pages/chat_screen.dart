@@ -161,7 +161,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 shape: BoxShape.rectangle,
               ),
             ),
-            Text(widget.name, style: TextStyle(fontSize: 20)),
+            Flexible(child: Text(widget.name, style: TextStyle(fontSize: 20))),
           ],
         ),
         actions: [
@@ -306,18 +306,6 @@ class _ChatScreenState extends State<ChatScreen> {
           )
         ],
       ),
-//        Positioned(
-//          bottom: 0,
-//          child: SnackBar(
-//            content: Text(progressString),
-//            shape:
-//                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-//            margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-//            behavior: SnackBarBehavior.floating,
-//          ),
-//        )
-//      ]
-//    ),
     );
   }
 
