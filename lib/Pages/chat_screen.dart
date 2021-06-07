@@ -193,85 +193,82 @@ class _ChatScreenState extends State<ChatScreen> {
                         .collection('groups')
                         .doc(widget.groupId)
                         .collection('messages')
-                        .orderBy("time")
+                        .orderBy("time", descending: true)
                         .snapshots()
                     : FirebaseFirestore.instance
                         .collection('chats')
                         .doc(widget.groupId)
                         .collection('messages')
-                        .orderBy("time")
+                        .orderBy("time", descending: true)
                         .snapshots(),
                 builder: (context, userSnapshot) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (scrollController.hasClients)
-                      scrollController
-                          .jumpTo(scrollController.position.maxScrollExtent);
-                    else {
-                      setState(() => null);
-                    }
-                  });
-
-                  return userSnapshot.hasData
-                      ? ListView.builder(
-                          controller: scrollController,
-                          shrinkWrap: true,
-                          itemCount: userSnapshot.data.docs.length,
-                          itemBuilder: (context, index) {
-                            if (userSnapshot.data.docs[index]["file_type"] ==
-                                "images") {
-                              return Container(
-                                  color: Colors.transparent,
-                                  child: ImageBubble(
-                                    isUser: userSnapshot.data.docs[index]
-                                            ["sent_by"] ==
-                                        Constants.myName,
-                                    imageUrl: userSnapshot.data.docs[index]
-                                        ["text"],
-                                    time: userSnapshot.data.docs[index]["time"],
-                                    userName: userSnapshot.data.docs[index]
-                                        ["sent_by"],
-                                    fileName: userSnapshot.data.docs[index]
-                                        ["name"],
-                                  ));
-                            } else if (userSnapshot.data.docs[index]
-                                    ["file_type"] ==
-                                "text") {
-                              return Container(
-                                  color: Colors.transparent,
-                                  child: ChatBubble(
-                                    isUser: userSnapshot.data.docs[index]
-                                            ["sent_by"] ==
-                                        Constants.myName,
-                                    messageText: userSnapshot.data.docs[index]
-                                        ["text"],
-                                    time: userSnapshot.data.docs[index]["time"],
-                                    userName: userSnapshot.data.docs[index]
-                                        ["sent_by"],
-                                  ));
-                            } else {
-                              return Container(
-                                  color: Colors.transparent,
-                                  child: FileBubble(
+                  if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else
+                    return userSnapshot.hasData
+                        ? ListView.builder(
+                            reverse: true,
+                            controller: scrollController,
+                            shrinkWrap: true,
+                            itemCount: userSnapshot.data.docs.length,
+                            itemBuilder: (context, index) {
+                              if (userSnapshot.data.docs[index]["file_type"] ==
+                                  "images") {
+                                return Container(
+                                    color: Colors.transparent,
+                                    child: ImageBubble(
                                       isUser: userSnapshot.data.docs[index]
                                               ["sent_by"] ==
                                           Constants.myName,
-                                      fileLink: userSnapshot.data.docs[index]
+                                      imageUrl: userSnapshot.data.docs[index]
                                           ["text"],
-                                      fileName: userSnapshot.data.docs[index]
-                                          ["name"],
                                       time: userSnapshot.data.docs[index]
                                           ["time"],
                                       userName: userSnapshot.data.docs[index]
                                           ["sent_by"],
-                                      fileExtension: userSnapshot
-                                          .data.docs[index]["extension"],
-                                      fileSize: userSnapshot.data.docs[index]
-                                          ["size"],
-                                      category: userSnapshot.data.docs[index]
-                                          ["file_type"]));
-                            }
-                          })
-                      : Center(child: CircularProgressIndicator());
+                                      fileName: userSnapshot.data.docs[index]
+                                          ["name"],
+                                    ));
+                              } else if (userSnapshot.data.docs[index]
+                                      ["file_type"] ==
+                                  "text") {
+                                return Container(
+                                    color: Colors.transparent,
+                                    child: ChatBubble(
+                                      isUser: userSnapshot.data.docs[index]
+                                              ["sent_by"] ==
+                                          Constants.myName,
+                                      messageText: userSnapshot.data.docs[index]
+                                          ["text"],
+                                      time: userSnapshot.data.docs[index]
+                                          ["time"],
+                                      userName: userSnapshot.data.docs[index]
+                                          ["sent_by"],
+                                    ));
+                              } else {
+                                return Container(
+                                    color: Colors.transparent,
+                                    child: FileBubble(
+                                        isUser: userSnapshot.data.docs[index]
+                                                ["sent_by"] ==
+                                            Constants.myName,
+                                        fileLink: userSnapshot.data.docs[index]
+                                            ["text"],
+                                        fileName: userSnapshot.data.docs[index]
+                                            ["name"],
+                                        time: userSnapshot.data.docs[index]
+                                            ["time"],
+                                        userName: userSnapshot.data.docs[index]
+                                            ["sent_by"],
+                                        fileExtension: userSnapshot
+                                            .data.docs[index]["extension"],
+                                        fileSize: userSnapshot.data.docs[index]
+                                            ["size"],
+                                        category: userSnapshot.data.docs[index]
+                                            ["file_type"]));
+                              }
+                            })
+                        : Center(child: Text("No messages found"));
                 },
               ),
             ),
