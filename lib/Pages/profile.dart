@@ -1,4 +1,5 @@
 import 'package:eduverse/Services/database.dart';
+import 'package:eduverse/Services/user.dart';
 import 'package:eduverse/Utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +9,27 @@ import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:eduverse/Utils/subjects.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
+bool editMode = false;
+Map<String, String> info = {
+  'Register Number': "",
+  'Branch': Constants.myBranch.toUpperCase(),
+  'Graduating Year': "",
+  'Phone': "",
+  'Designation': "",
+  'First Name': "",
+  'Last Name': ""
+};
 
-class Profile extends StatelessWidget {
+class Profile extends StatefulWidget {
+  @override
+  _ProfileState createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
   String roleCollection;
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+
   Future getName() async {
     var userRoleSnapshot =
         await DatabaseMethods().getUserRole(_auth.currentUser.uid);
@@ -20,6 +39,53 @@ class Profile extends StatelessWidget {
         .getUserInfo(_auth.currentUser.uid, userRoleSnapshot.data()["role"]);
   }
 
+  saveEdit() async {
+    if (Constants.myRole == "teacher") {
+      Map<String, dynamic> user = {
+        'first_name': info['First Name'],
+        'last_name': info['Last Name'],
+        'branch': info['Branch'],
+        'designation': info['Designation'],
+        'phone': info['Phone'],
+      };
+
+      await DatabaseMethods()
+          .updateUser("teachers", _auth.currentUser.uid, user);
+    } else {
+      Map<String, dynamic> user = {
+        'first_name': info['First Name'],
+        'last_name': info['Last Name'],
+        'branch': info['Branch'],
+        'register_number': info['Register Number'],
+        'graduating_year': info['Graduating Year'],
+        'phone': info['Phone'],
+      };
+      await DatabaseMethods()
+          .updateUser("students", _auth.currentUser.uid, user);
+    }
+
+    if (Constants.myRole == "teacher") {
+      await DatabaseMethods()
+          .removeFromOfficialGroup(Constants.myBranch, _auth.currentUser.uid);
+      await DatabaseMethods().addToOfficialGroup(
+          info['Branch'].toLowerCase(), _auth.currentUser.uid);
+    }
+    await UserHelper.saveName(info['First Name'] + " " + info['Last Name']);
+    print(info['Branch']);
+    await UserHelper.saveBranch(info['Branch'].toLowerCase());
+    Constants.myName = await UserHelper.getName();
+    Constants.myBranch = await UserHelper.getBranch();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    firstNameController.text = Constants.myName.split(" ")[0];
+    lastNameController.text = Constants.myName.split(" ")[1];
+    info["First Name"] = Constants.myName.split(" ")[0];
+    info["Last Name"] = Constants.myName.split(" ")[1];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,10 +93,11 @@ class Profile extends StatelessWidget {
         backgroundColor: Colors.white.withOpacity(0.1),
         leading: IconButton(
             onPressed: () {
+              editMode = false;
               Navigator.pop(context);
             },
             icon: Icon(Icons.arrow_back_ios)),
-        title: Text('User Profile', style: TextStyle(fontSize: 20)),
+        title: Text('User Profile', style: TextStyle(fontSize: 25)),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -47,32 +114,84 @@ class Profile extends StatelessWidget {
                       )),
                 ),
                 Expanded(
-                  child: Padding(
-                      padding: const EdgeInsets.only(bottom: 30),
-                      child: Text(Constants.myName,
+                  child: editMode
+                      ? Column(
+                          children: [
+                            TextField(
+                              controller: firstNameController,
+                              onChanged: (val) {
+                                info["First Name"] = val;
+                              },
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            TextField(
+                              controller: lastNameController,
+                              onChanged: (val) {
+                                info["Last Name"] = val;
+                              },
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        )
+                      : Text(Constants.myName,
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,
-                              fontWeight: FontWeight.w800))),
+                              fontWeight: FontWeight.w800)),
                 ),
+                SizedBox(width: 10),
                 Padding(
                   padding: const EdgeInsets.only(right: 15.0),
-                  child: Container(
-                      margin: EdgeInsets.fromLTRB(70, 5, 0, 85),
-                      height: 35,
-                      width: 35,
-                      decoration: BoxDecoration(
-                        color: kBlue,
-                        borderRadius: BorderRadius.circular(13),
-                        shape: BoxShape.rectangle,
-                      ),
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.edit,
-                          color: Colors.white,
-                        ),
-                      )),
+                  child: Column(
+                    children: [
+                      Container(
+                          height: 35,
+                          width: 35,
+                          decoration: BoxDecoration(
+                            color: kBlue,
+                            borderRadius: BorderRadius.circular(13),
+                            shape: BoxShape.rectangle,
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              if (editMode) {
+                                saveEdit();
+                              }
+
+                              setState(() {
+                                editMode = !editMode;
+                              });
+                            },
+                            child: Icon(
+                              editMode ? Icons.save : Icons.edit,
+                              color: Colors.white,
+                            ),
+                          )),
+                      SizedBox(height: 20),
+                      editMode
+                          ? Container(
+//                      margin: EdgeInsets.fromLTRB(70, 5, 0, 85),
+                              height: 35,
+                              width: 35,
+                              decoration: BoxDecoration(
+                                color: kPurple,
+                                borderRadius: BorderRadius.circular(13),
+                                shape: BoxShape.rectangle,
+                              ),
+                              child: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    editMode = !editMode;
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                ),
+                              ))
+                          : Container()
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -134,23 +253,23 @@ class StudentProfileCard extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
-              child: ProfileData('Register Number:', register),
+              child: ProfileData('Register Number', register),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
-              child: ProfileData('Email :', email),
+              child: ProfileData('Email', email),
             ),
             Padding(
               padding: const EdgeInsets.all(15),
-              child: ProfileData('Branch :', branch),
+              child: ProfileData('Branch', branch),
             ),
             Padding(
               padding: const EdgeInsets.all(15),
-              child: ProfileData('Graduating Year :', year),
+              child: ProfileData('Graduating Year', year),
             ),
             Padding(
               padding: const EdgeInsets.all(15),
-              child: ProfileData('Phone :', phone),
+              child: ProfileData('Phone', phone),
             )
           ],
         ),
@@ -177,6 +296,7 @@ class FacultyProfileCard extends StatelessWidget {
       ),
     );
   }).toList();
+
   List selectSubjects(value) {
     value.forEach((element) {
       selectedSubs.add(subjectList[element]);
@@ -238,19 +358,19 @@ class FacultyProfileCard extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
-                  child: ProfileData('Email :', email),
+                  child: ProfileData('Email', email),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(15),
-                  child: ProfileData('Branch :', branch),
+                  child: ProfileData('Branch', branch),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(15),
-                  child: ProfileData('Designation :', designation),
+                  child: ProfileData('Designation', designation),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(15),
-                  child: ProfileData('Phone :', phone),
+                  child: ProfileData('Phone', phone),
                 )
               ],
             ),
@@ -319,10 +439,28 @@ class FacultyProfileCard extends StatelessWidget {
   }
 }
 
-class ProfileData extends StatelessWidget {
+class ProfileData extends StatefulWidget {
   final String fieldName;
   final String fieldValue;
   ProfileData(this.fieldName, this.fieldValue);
+
+  @override
+  _ProfileDataState createState() => _ProfileDataState();
+}
+
+class _ProfileDataState extends State<ProfileData> {
+  TextEditingController textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      textEditingController.text = widget.fieldValue;
+      if (widget.fieldName != 'Branch') {
+        info[widget.fieldName] = widget.fieldValue;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -330,13 +468,52 @@ class ProfileData extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          fieldName,
+          widget.fieldName + " :",
           style: TextStyle(color: Colors.grey, fontSize: 17),
         ),
-        Text(
-          fieldValue,
-          style: TextStyle(color: Colors.white, fontSize: 17),
-        )
+        editMode
+            ? widget.fieldName == 'Branch'
+                ? DropdownButton<String>(
+                    onChanged: (String value) {
+                      setState(() {
+                        info['Branch'] = value;
+                      });
+                    },
+                    value: info[widget.fieldName],
+                    style: TextStyle(
+                      color: Color(0xFFAAABB3),
+                    ),
+                    items: <String>[
+                      'IT',
+                      'CS',
+                      'EC',
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList())
+                : widget.fieldName == "Email"
+                    ? Text(
+                        widget.fieldValue,
+                        style: TextStyle(color: Colors.white, fontSize: 17),
+                      )
+                    : Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: TextField(
+                            controller: textEditingController,
+                            onChanged: (val) {
+                              info[widget.fieldName] = val;
+                            },
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      )
+            : Text(
+                widget.fieldValue,
+                style: TextStyle(color: Colors.white, fontSize: 17),
+              )
       ],
     );
   }

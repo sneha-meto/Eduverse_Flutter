@@ -1,3 +1,4 @@
+import 'package:eduverse/Services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:eduverse/Components/textbox_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -270,7 +271,9 @@ class _TeacherState extends State<Teacher> {
                                 UserHelper.saveRole("teacher");
                                 UserHelper.saveBranch(
                                     _chosenValue.toLowerCase());
-                                addToOfficialGroup(_chosenValue.toLowerCase());
+                                DatabaseMethods().addToOfficialGroup(
+                                    _chosenValue.toLowerCase(),
+                                    _auth.currentUser.uid);
 
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
@@ -318,14 +321,5 @@ class _TeacherState extends State<Teacher> {
     } else {
       _success = false;
     }
-  }
-
-  Future addToOfficialGroup(branch) async {
-    await FirebaseFirestore.instance
-        .collection("groups")
-        .doc("${branch}_official")
-        .update({
-      "members": FieldValue.arrayUnion([_auth.currentUser.uid])
-    }).then((value) => print("added to official"));
   }
 }

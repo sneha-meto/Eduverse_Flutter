@@ -18,6 +18,7 @@ class UserHelper {
 
   static Future<bool> saveBranch(String userBranch) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("new branch:$userBranch");
     return prefs.setString(userBranchKey, userBranch);
   }
 

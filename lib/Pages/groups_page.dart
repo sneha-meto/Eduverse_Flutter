@@ -28,12 +28,6 @@ class _GroupsWidgetState extends State<GroupsWidget> {
           ),
           titleSpacing: 0,
           elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
         ),
         body: StreamBuilder(
           stream: Constants.myRole == "student"

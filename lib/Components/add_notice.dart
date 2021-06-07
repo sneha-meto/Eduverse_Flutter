@@ -38,7 +38,8 @@ class AddNotice extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(15),
-      height: MediaQuery.of(context).size.height * 0.4,
+//      height: MediaQuery.of(context).size.height * 0.4,
+      height: 330,
       child: Column(
         children: [
           Padding(

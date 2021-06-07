@@ -16,6 +16,16 @@ class _SearchPageState extends State<SearchPage> {
   bool isLoading = false;
   bool haveUserSearched = false;
   QuerySnapshot<Map<String, dynamic>> searchResultSnapshot;
+  final snackBar = SnackBar(
+    content: Text(
+      "You cannot message yourself!",
+      textAlign: TextAlign.center,
+    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+    margin: EdgeInsets.symmetric(horizontal: 70, vertical: 15),
+    behavior: SnackBarBehavior.floating,
+    backgroundColor: kPurple,
+  );
 
   initiateSearch() async {
     if (searchEditingController.text.isNotEmpty) {
@@ -36,27 +46,31 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   sendMessage(String uid, String userName) {
-    List<String> users = [widget._auth.currentUser.uid, uid];
+    if (userName != Constants.myName) {
+      List<String> users = [widget._auth.currentUser.uid, uid];
 
-    String chatId = getChatId(Constants.myName, userName);
+      String chatId = getChatId(Constants.myName, userName);
 
-    Map<String, dynamic> chatRoom = {
-      "participants": users,
-      "images": [],
-      "assignments": [],
-      "materials": []
-    };
+      Map<String, dynamic> chatRoom = {
+        "participants": users,
+        "images": [],
+        "assignments": [],
+        "materials": []
+      };
 
-    DatabaseMethods().createChat(chatRoom, chatId);
+      DatabaseMethods().createChat(chatRoom, chatId);
 
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => ChatScreen(
-                  groupId: chatId,
-                  name: userName,
-                  isGroup: false,
-                )));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ChatScreen(
+                    groupId: chatId,
+                    name: userName,
+                    isGroup: false,
+                  )));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
   @override

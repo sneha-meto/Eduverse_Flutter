@@ -16,12 +16,6 @@ class InboxWidget extends StatelessWidget {
           'Inbox',
           style: TextStyle(fontSize: 25),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         actions: [
           IconButton(
             icon: Icon(Icons.add),

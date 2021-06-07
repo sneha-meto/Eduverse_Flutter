@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eduverse/Services/database.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,6 @@ import 'package:flutter/rendering.dart';
 import 'package:eduverse/Pages/media.dart';
 import 'package:eduverse/Utils/constants.dart';
 import 'package:eduverse/Components/chat_bubbles.dart';
-import 'package:eduverse/Pages/media_view.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen(

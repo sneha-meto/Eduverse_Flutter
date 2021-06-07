@@ -11,10 +11,16 @@ import 'package:eduverse/Utils/subjects.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:eduverse/Pages/login.dart';
 import 'package:eduverse/Components/home_tiles.dart';
+import 'package:eduverse/Pages/about.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
-class HomeWidget extends StatelessWidget {
+class HomeWidget extends StatefulWidget {
+  @override
+  _HomeWidgetState createState() => _HomeWidgetState();
+}
+
+class _HomeWidgetState extends State<HomeWidget> {
   String getDay() {
     var day =
         DateFormat('EEEE').format(DateTime.now()).toLowerCase().substring(0, 3);
@@ -51,7 +57,7 @@ class HomeWidget extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => Profile()),
-                );
+                ).then((value) => setState(() {}));
               },
               child: CircleAvatar(
                 child: Image.asset(
@@ -62,40 +68,59 @@ class HomeWidget extends StatelessWidget {
               ),
             ),
             SizedBox(
-              width: 20,
+              width: 15,
             ),
             FutureBuilder(
               future: getUser(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
                   return Text('Hi ${snapshot.data["first_name"]}!',
-                      style: TextStyle(color: Colors.white, fontSize: 30));
+                      style: TextStyle(color: Colors.white, fontSize: 28));
                 }
                 return Text('Hi User!',
-                    style: TextStyle(color: Colors.white, fontSize: 30));
+                    style: TextStyle(color: Colors.white, fontSize: 28));
               },
             ),
-            Expanded(
-              child: IconButton(
-                  alignment: Alignment.centerRight,
-                  icon: Icon(
-                    Icons.exit_to_app,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    Future<void> _signOut() async {
-                      print("success  signoff ");
-                      return _auth.signOut();
-                    }
+            Spacer(),
+            Column(
+              children: [
+                InkWell(
+//                      alignment: Alignment.centerRight,
+                    child: Icon(
+                      Icons.info_outline,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => About(),
+                          ));
+                    }),
+                SizedBox(height: 15),
+                InkWell(
+//                      alignment: Alignment.centerRight,
+                    child: Icon(
+                      Icons.exit_to_app,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                    onTap: () {
+                      Future<void> _signOut() async {
+                        print("success  signoff ");
+                        return _auth.signOut();
+                      }
 
-                    _signOut();
+                      _signOut();
 
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) => Login(),
-                        ));
-                  }),
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => Login(),
+                          ));
+                    }),
+              ],
             )
           ],
         ),
@@ -140,8 +165,6 @@ class HomeWidget extends StatelessWidget {
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
-
-//                      width: MediaQuery.of(context).size.height * 0.5,
                   height: MediaQuery.of(context).size.height * 0.55,
                   decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.1),
@@ -309,12 +332,11 @@ class HomeWidget extends StatelessWidget {
             future: getUser(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
-//                                    String userBranch = snapshot.data["branch"]
-//                                        .toString()
-//                                        .toLowerCase();
-//                                    String userRole = snapshot.data["role"];
+                String userBranch =
+                    snapshot.data["branch"].toString().toLowerCase();
+                String userRole = snapshot.data["role"];
                 return StreamBuilder(
-                    stream: DatabaseMethods().getTasks(Constants.myBranch),
+                    stream: DatabaseMethods().getTasks(userBranch),
 //
                     builder: (context, snapshot) {
                       Future.delayed(Duration(milliseconds: 100));
@@ -330,7 +352,7 @@ class HomeWidget extends StatelessWidget {
                                 itemBuilder: (context, i) {
                                   return TaskTile(
                                     task: tasks[i],
-                                    isFaculty: Constants.myRole == "teacher",
+                                    isFaculty: userRole == "teacher",
                                   );
                                 }),
                           );
@@ -361,26 +383,10 @@ class HomeWidget extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color: Colors.white),
             ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Container(
-                child: Icon(Icons.edit),
-                padding: EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                    color: kPurple,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                          offset: Offset(1, 1),
-                          blurRadius: 4,
-                          color: Colors.black54)
-                    ]),
-              ),
-            )
           ],
         ),
         SizedBox(
-          height: 5,
+          height: 15,
         ),
         FutureBuilder(
             future: getUser(),
