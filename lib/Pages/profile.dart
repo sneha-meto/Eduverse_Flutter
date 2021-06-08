@@ -420,16 +420,66 @@ class ProfileData extends StatefulWidget {
 
 class _ProfileDataState extends State<ProfileData> {
   TextEditingController textEditingController = TextEditingController();
+  List<String> branchList = [
+    'IT',
+    'CS',
+    'EC',
+  ];
 
+  List<String> designationList = [
+    'HOD',
+    'Professor',
+    'Associate Professor',
+    'Assistant Professor',
+    'Guest Lecturer'
+  ];
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       textEditingController.text = widget.fieldValue;
-      if (widget.fieldName != 'Branch') {
-        info[widget.fieldName] = widget.fieldValue;
-      }
+//      if (widget.fieldName != 'Branch' && widget.fieldName != 'Designation') {
+      info[widget.fieldName] = widget.fieldValue;
+//      }
     });
+  }
+
+  String validate(String value, String type) {
+    if (value.isEmpty) {
+      return 'This field is required';
+    }
+
+    switch (type) {
+      case "Graduating Year":
+        if (int.parse(value) < 2021 || int.parse(value) > 2031) {
+          return 'Please enter a valid year';
+        }
+        break;
+
+      case "Register Number":
+        if (value.length != 8) {
+          return 'Register number should be 8 digits long';
+        }
+        break;
+
+      case "Phone":
+        if (value.length != 10) {
+          return 'Phone number should be 10 digits long';
+        }
+        break;
+
+      case "Designation":
+        Pattern pattern =
+            r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+            r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+            r"{0,253}[a-zA-Z0-9])?)*$";
+        RegExp regex = new RegExp(pattern);
+        if (!regex.hasMatch(value) || value == null)
+          return 'Enter a valid email address';
+        break;
+    }
+
+    return null;
   }
 
   @override
@@ -442,27 +492,34 @@ class _ProfileDataState extends State<ProfileData> {
           style: TextStyle(color: Colors.grey, fontSize: 17),
         ),
         editMode
-            ? widget.fieldName == 'Branch'
+            ? widget.fieldName == 'Branch' || widget.fieldName == 'Designation'
                 ? DropdownButton<String>(
                     onChanged: (String value) {
                       setState(() {
-                        info['Branch'] = value;
+                        widget.fieldName == 'Branch'
+                            ? info['Branch'] = value
+                            : info['Designation'] = value;
                       });
                     },
                     value: info[widget.fieldName],
                     style: TextStyle(
                       color: Color(0xFFAAABB3),
                     ),
-                    items: <String>[
-                      'IT',
-                      'CS',
-                      'EC',
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList())
+                    items: widget.fieldName == 'Branch'
+                        ? branchList
+                            .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList()
+                        : designationList
+                            .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList())
                 : widget.fieldName == "Email"
                     ? Text(
                         widget.fieldValue,
@@ -471,7 +528,11 @@ class _ProfileDataState extends State<ProfileData> {
                     : Flexible(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: TextField(
+                          child: TextFormField(
+                            validator: (value) {
+                              String result = validate(value, widget.fieldName);
+                              return result;
+                            },
                             controller: textEditingController,
                             onChanged: (val) {
                               info[widget.fieldName] = val;

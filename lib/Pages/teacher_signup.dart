@@ -101,16 +101,19 @@ class _TeacherState extends State<Teacher> {
                           textInputType: TextInputType.name,
                           hint: "First Name",
                           controller: _firstname,
+                          fieldName: "firstName",
                         ),
                         TextBox(
                           textInputType: TextInputType.name,
                           hint: "Last Name",
                           controller: _lastname,
+                          fieldName: "lastName",
                         ),
                         TextBox(
                           textInputType: TextInputType.emailAddress,
                           hint: "Official Email",
                           controller: _emailController,
+                          fieldName: "email",
                         ),
                         Padding(
                           padding: EdgeInsets.all(5.0),
@@ -127,13 +130,12 @@ class _TeacherState extends State<Teacher> {
                                 'IT',
                                 'CS',
                                 'EC',
-                              ].map<DropdownMenuItem<String>>(
-                                      (String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
+                              ].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
                               hint: Text(
                                 "Branch",
                                 style: TextStyle(
@@ -150,7 +152,8 @@ class _TeacherState extends State<Teacher> {
                                     width: 2,
                                   ),
                                 ),
-                                contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                                contentPadding:
+                                    EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                                 disabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15.0),
                                   borderSide: BorderSide(
@@ -167,12 +170,15 @@ class _TeacherState extends State<Teacher> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: BorderSide(color: Color(0xFF54ABD0), width: 2),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFF54ABD0), width: 2),
                                 ),
                               ),
                               onChanged: (String value) =>
                                   setState(() => _chosenValue = value),
-                              validator: (value) => value == null ? 'This field is required' : null,
+                              validator: (value) => value == null
+                                  ? 'This field is required'
+                                  : null,
                             ),
                           ),
                         ),
@@ -193,8 +199,7 @@ class _TeacherState extends State<Teacher> {
                                 'Associate Professor',
                                 'Assistant Professor',
                                 'Guest Lecturer',
-                              ].map<DropdownMenuItem<String>>(
-                                  (String value) {
+                              ].map<DropdownMenuItem<String>>((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
                                   child: Text(value),
@@ -217,7 +222,8 @@ class _TeacherState extends State<Teacher> {
                                     width: 2,
                                   ),
                                 ),
-                                contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                                contentPadding:
+                                    EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                                 disabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15.0),
                                   borderSide: BorderSide(
@@ -234,12 +240,15 @@ class _TeacherState extends State<Teacher> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: BorderSide(color: Color(0xFF54ABD0), width: 2),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFF54ABD0), width: 2),
                                 ),
                               ),
                               onChanged: (String value) =>
                                   setState(() => _designation = value),
-                              validator: (value) => value == null ? 'This field is required' : null,
+                              validator: (value) => value == null
+                                  ? 'This field is required'
+                                  : null,
                             ),
                           ),
                         ),
@@ -247,11 +256,13 @@ class _TeacherState extends State<Teacher> {
                           textInputType: TextInputType.number,
                           hint: "Phone Number",
                           controller: _phone,
+                          fieldName: "phone",
                         ),
                         TextBox(
                           textInputType: TextInputType.visiblePassword,
                           hint: "Password",
                           controller: _passwordController,
+                          fieldName: "password",
                         ),
                         Button(
                             buttonName: "Sign Up",

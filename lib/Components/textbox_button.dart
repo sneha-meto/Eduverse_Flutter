@@ -1,19 +1,63 @@
 import 'package:eduverse/Utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 
 class TextBox extends StatefulWidget {
   final TextInputType textInputType;
   final String hint;
   final TextEditingController controller;
+  final String fieldName;
 
-  TextBox({this.textInputType, this.hint, this.controller});
+  TextBox({this.textInputType, this.hint, this.controller, this.fieldName});
 
   @override
   _TextBoxState createState() => _TextBoxState();
 }
 
 class _TextBoxState extends State<TextBox> {
+  String validate(String value, String type) {
+    if (value.isEmpty) {
+      return 'This field is required';
+    }
+
+    switch (type) {
+      case "year":
+        if (int.parse(value) < 2021 || int.parse(value) > 2031) {
+          return 'Please enter a valid year';
+        }
+        break;
+
+      case "password":
+        if (value.length < 6) {
+          return 'Password should be at least 6 characters';
+        }
+        break;
+
+      case "register":
+        if (value.length != 8) {
+          return 'Register number should be 8 digits long';
+        }
+        break;
+
+      case "phone":
+        if (value.length != 10) {
+          return 'Phone number should be 10 digits long';
+        }
+        break;
+
+      case "email":
+        Pattern pattern =
+            r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+            r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+            r"{0,253}[a-zA-Z0-9])?)*$";
+        RegExp regex = new RegExp(pattern);
+        if (!regex.hasMatch(value) || value == null)
+          return 'Enter a valid email address';
+        break;
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -24,10 +68,8 @@ class _TextBoxState extends State<TextBox> {
         style: TextStyle(color: Colors.white),
         keyboardType: widget.textInputType,
         validator: (value) {
-          if (value.isEmpty) {
-            return 'This field is required';
-          }
-          return null;
+          String result = validate(value, widget.fieldName);
+          return result;
         },
         // autofocus: true,
         controller: widget.controller,
@@ -120,25 +162,6 @@ class YearBox extends StatefulWidget {
 }
 
 class _YearBoxState extends State<YearBox> {
-
-  var alertStyle = AlertStyle(
-    overlayColor: Colors.transparent,
-    animationType: AnimationType.fromTop,
-    isCloseButton: false,
-    isOverlayTapDismiss: false,
-    descStyle: TextStyle(fontWeight: FontWeight.bold),
-    animationDuration: Duration(milliseconds: 400),
-    alertBorder: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(60.0),
-      side: BorderSide(
-        color: Colors.grey,
-      ),
-    ),
-    titleStyle: TextStyle(
-      color: Color(0xFF54ABD0),
-    ),
-  );
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -151,45 +174,14 @@ class _YearBoxState extends State<YearBox> {
         validator: (String value) {
           if (value.isEmpty) {
             return 'This field is required';
+          } else if (int.parse(value) >= 2021 && int.parse(value) <= 2031) {
+            print(value);
+          } else {
+            return 'Please enter a valid year';
           }
-          else if(int.parse(value) >= 2021) {
-              print(value);
-            }
-            else {
-              Alert(
-                context: context,
-                style: alertStyle,
-                type: AlertType.info,
-                title: "Invalid",
-                desc: "Invalid Year ",
-                buttons: [
-                  DialogButton(
-                    child: Text(
-                      "Close",
-                      style: TextStyle(
-                          color: Colors.white, fontSize: 20),
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                    color: Color(0xFF54ABD0),
-                    radius: BorderRadius.circular(10.0),
-                  ),
-                ],
-              ).show();
-            }
           return null;
         },
-        // autofocus: true,
         controller: widget.controller,
-        // onChanged: (String value) {
-        //   try {
-        //     if (int.parse(value) >= 2022) {
-        //       return value;
-        //     }
-        //   } catch (e) {
-        //     print(e);
-        //
-        //     }
-        // },
         decoration: InputDecoration(
           isDense: true,
           hintText: widget.hint,
@@ -225,4 +217,3 @@ class _YearBoxState extends State<YearBox> {
     );
   }
 }
-
