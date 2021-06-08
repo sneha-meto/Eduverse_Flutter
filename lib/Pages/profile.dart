@@ -27,6 +27,7 @@ class _ProfileState extends State<Profile> {
   String roleCollection;
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future getName() async {
     var userRoleSnapshot =
@@ -38,37 +39,43 @@ class _ProfileState extends State<Profile> {
   }
 
   saveEdit() async {
-    if (Constants.myRole == "teacher") {
-      Map<String, dynamic> user = {
-        'branch': info['Branch'],
-        'designation': info['Designation'],
-        'phone': info['Phone'],
-      };
+    if (_formKey.currentState.validate()) {
+      if (Constants.myRole == "teacher") {
+        Map<String, dynamic> user = {
+          'branch': info['Branch'],
+          'designation': info['Designation'],
+          'phone': info['Phone'],
+        };
 
-      await DatabaseMethods()
-          .updateUser("teachers", _auth.currentUser.uid, user);
-    } else {
-      Map<String, dynamic> user = {
-        'branch': info['Branch'],
-        'register_number': info['Register Number'],
-        'graduating_year': info['Graduating Year'],
-        'phone': info['Phone'],
-      };
-      await DatabaseMethods()
-          .updateUser("students", _auth.currentUser.uid, user);
-    }
+        await DatabaseMethods()
+            .updateUser("teachers", _auth.currentUser.uid, user);
+      } else {
+        Map<String, dynamic> user = {
+          'branch': info['Branch'],
+          'register_number': info['Register Number'],
+          'graduating_year': info['Graduating Year'],
+          'phone': info['Phone'],
+        };
+        await DatabaseMethods()
+            .updateUser("students", _auth.currentUser.uid, user);
+      }
 
-    if (Constants.myRole == "teacher") {
-      await DatabaseMethods()
-          .removeFromOfficialGroup(Constants.myBranch, _auth.currentUser.uid);
-      await DatabaseMethods().addToOfficialGroup(
-          info['Branch'].toLowerCase(), _auth.currentUser.uid);
+      if (Constants.myRole == "teacher") {
+        await DatabaseMethods()
+            .removeFromOfficialGroup(Constants.myBranch, _auth.currentUser.uid);
+        await DatabaseMethods().addToOfficialGroup(
+            info['Branch'].toLowerCase(), _auth.currentUser.uid);
+      }
+
+      await UserHelper.saveName(info['First Name'] + " " + info['Last Name']);
+      print(info['Branch']);
+      await UserHelper.saveBranch(info['Branch'].toLowerCase());
+      Constants.myName = await UserHelper.getName();
+      Constants.myBranch = await UserHelper.getBranch();
+      setState(() {
+        editMode = false;
+      });
     }
-    await UserHelper.saveName(info['First Name'] + " " + info['Last Name']);
-    print(info['Branch']);
-    await UserHelper.saveBranch(info['Branch'].toLowerCase());
-    Constants.myName = await UserHelper.getName();
-    Constants.myBranch = await UserHelper.getBranch();
   }
 
   @override
@@ -131,11 +138,10 @@ class _ProfileState extends State<Profile> {
                             onTap: () {
                               if (editMode) {
                                 saveEdit();
-                              }
-
-                              setState(() {
-                                editMode = !editMode;
-                              });
+                              } else
+                                setState(() {
+                                  editMode = !editMode;
+                                });
                             },
                             child: Icon(
                               editMode ? Icons.save : Icons.edit,
@@ -175,19 +181,25 @@ class _ProfileState extends State<Profile> {
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
                     if (roleCollection == "teachers") {
-                      return FacultyProfileCard(
-                        email: snapshot.data["email"],
-                        branch: snapshot.data["branch"],
-                        designation: snapshot.data["designation"],
-                        phone: snapshot.data["phone"],
+                      return Form(
+                        key: _formKey,
+                        child: FacultyProfileCard(
+                          email: snapshot.data["email"],
+                          branch: snapshot.data["branch"],
+                          designation: snapshot.data["designation"],
+                          phone: snapshot.data["phone"],
+                        ),
                       );
                     } else {
-                      return StudentProfileCard(
-                        email: snapshot.data["email"],
-                        branch: snapshot.data["branch"],
-                        year: snapshot.data["graduating_year"],
-                        phone: snapshot.data["phone"],
-                        register: snapshot.data["register_number"],
+                      return Form(
+                        key: _formKey,
+                        child: StudentProfileCard(
+                          email: snapshot.data["email"],
+                          branch: snapshot.data["branch"],
+                          year: snapshot.data["graduating_year"],
+                          phone: snapshot.data["phone"],
+                          register: snapshot.data["register_number"],
+                        ),
                       );
                     }
                   } else
@@ -467,16 +479,6 @@ class _ProfileDataState extends State<ProfileData> {
           return 'Phone number should be 10 digits long';
         }
         break;
-
-      case "Designation":
-        Pattern pattern =
-            r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
-            r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
-            r"{0,253}[a-zA-Z0-9])?)*$";
-        RegExp regex = new RegExp(pattern);
-        if (!regex.hasMatch(value) || value == null)
-          return 'Enter a valid email address';
-        break;
     }
 
     return null;
@@ -533,6 +535,7 @@ class _ProfileDataState extends State<ProfileData> {
                               String result = validate(value, widget.fieldName);
                               return result;
                             },
+                            keyboardType: TextInputType.number,
                             controller: textEditingController,
                             onChanged: (val) {
                               info[widget.fieldName] = val;

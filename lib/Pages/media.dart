@@ -52,12 +52,14 @@ class _ChatMediaState extends State<ChatMedia> {
               SizedBox(
                 width: 15,
               ),
-              Text(
-                widget.name,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
+              Flexible(
+                child: Text(
+                  widget.name,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
+                ),
               ),
             ],
           ),

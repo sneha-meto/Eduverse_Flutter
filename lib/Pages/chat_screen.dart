@@ -104,6 +104,7 @@ class _ChatScreenState extends State<ChatScreen> {
       } else {
         print("user has cancelled");
       }
+      setState(() {});
     } catch (e) {
       print(e);
     }
@@ -198,6 +199,24 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Widget setDismiss({Widget childBubble, DocumentSnapshot messageSnap}) {
+    return messageSnap["sent_by"] != Constants.myName
+        ? childBubble
+        : Dismissible(
+            direction: DismissDirection.endToStart,
+            confirmDismiss: (direction) async {
+              final bool res = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return deleteAlert(messageSnap.reference.id);
+                  });
+              return res;
+            },
+            background: slideLeftBackground(),
+            key: Key(messageSnap.toString()),
+            child: childBubble);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -262,25 +281,9 @@ class _ChatScreenState extends State<ChatScreen> {
                             itemBuilder: (context, index) {
                               if (userSnapshot.data.docs[index]["file_type"] ==
                                   "images") {
-                                return Dismissible(
-                                  direction: userSnapshot.data.docs[index]
-                                              ["sent_by"] !=
-                                          Constants.myName
-                                      ? DismissDirection.none
-                                      : DismissDirection.endToStart,
-                                  confirmDismiss: (direction) async {
-                                    final bool res = await showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return deleteAlert(userSnapshot
-                                              .data.docs[index].reference.id);
-                                        });
-                                    return res;
-                                  },
-                                  background: slideLeftBackground(),
-                                  key: Key(
-                                      userSnapshot.data.docs[index].toString()),
-                                  child: Container(
+                                return setDismiss(
+                                  messageSnap: userSnapshot.data.docs[index],
+                                  childBubble: Container(
                                       color: Colors.transparent,
                                       child: ImageBubble(
                                         isUser: userSnapshot.data.docs[index]
@@ -299,76 +302,43 @@ class _ChatScreenState extends State<ChatScreen> {
                               } else if (userSnapshot.data.docs[index]
                                       ["file_type"] ==
                                   "text") {
-                                return Dismissible(
-                                    direction: userSnapshot.data.docs[index]
-                                    ["sent_by"] !=
-                                    Constants.myName
-                                    ? DismissDirection.none
-                                        : DismissDirection.endToStart,
-                                    confirmDismiss: (direction) async {
-                                  final bool res = await showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return deleteAlert(userSnapshot
-                                            .data.docs[index].reference.id);
-                                      });
-                                  return res;
-                                },
-                              background: slideLeftBackground(),
-                              key: Key(
-                              userSnapshot.data.docs[index].toString()),
-                              child: Container(
-                                    color: Colors.transparent,
-                                    child: ChatBubble(
-                                      isUser: userSnapshot.data.docs[index]
-                                              ["sent_by"] ==
-                                          Constants.myName,
-                                      messageText: userSnapshot.data.docs[index]
-                                          ["text"],
-                                      time: userSnapshot.data.docs[index]
-                                          ["time"],
-                                      userName: userSnapshot.data.docs[index]
-                                          ["sent_by"],
-                                    )));
+                                return setDismiss(
+                                    messageSnap: userSnapshot.data.docs[index],
+                                    childBubble: Container(
+                                        color: Colors.transparent,
+                                        child: ChatBubble(
+                                          isUser: userSnapshot.data.docs[index]
+                                                  ["sent_by"] ==
+                                              Constants.myName,
+                                          messageText: userSnapshot
+                                              .data.docs[index]["text"],
+                                          time: userSnapshot.data.docs[index]
+                                              ["time"],
+                                          userName: userSnapshot
+                                              .data.docs[index]["sent_by"],
+                                        )));
                               } else {
-                                return Dismissible(
-                                    direction: userSnapshot.data.docs[index]
-                                    ["sent_by"] !=
-                                    Constants.myName
-                                    ? DismissDirection.none
-                                        : DismissDirection.endToStart,
-                                    confirmDismiss: (direction) async {
-                                  final bool res = await showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return deleteAlert(userSnapshot
-                                            .data.docs[index].reference.id);
-                                      });
-                                  return res;
-                                },
-                              background: slideLeftBackground(),
-                              key: Key(
-                              userSnapshot.data.docs[index].toString()),
-                              child: Container(
-                                    color: Colors.transparent,
-                                    child: FileBubble(
-                                        isUser: userSnapshot.data.docs[index]
-                                                ["sent_by"] ==
-                                            Constants.myName,
-                                        fileLink: userSnapshot.data.docs[index]
-                                            ["text"],
-                                        fileName: userSnapshot.data.docs[index]
-                                            ["name"],
-                                        time: userSnapshot.data.docs[index]
-                                            ["time"],
-                                        userName: userSnapshot.data.docs[index]
-                                            ["sent_by"],
-                                        fileExtension: userSnapshot
-                                            .data.docs[index]["extension"],
-                                        fileSize: userSnapshot.data.docs[index]
-                                            ["size"],
-                                        category: userSnapshot.data.docs[index]
-                                            ["file_type"])));
+                                return setDismiss(
+                                    messageSnap: userSnapshot.data.docs[index],
+                                    childBubble: Container(
+                                        color: Colors.transparent,
+                                        child: FileBubble(
+                                            isUser: userSnapshot.data.docs[index]
+                                                    ["sent_by"] ==
+                                                Constants.myName,
+                                            fileLink: userSnapshot.data.docs[index]
+                                                ["text"],
+                                            fileName: userSnapshot.data.docs[index]
+                                                ["name"],
+                                            time: userSnapshot.data.docs[index]
+                                                ["time"],
+                                            userName: userSnapshot.data.docs[index]
+                                                ["sent_by"],
+                                            fileExtension: userSnapshot
+                                                .data.docs[index]["extension"],
+                                            fileSize: userSnapshot.data.docs[index]
+                                                ["size"],
+                                            category: userSnapshot.data.docs[index]["file_type"])));
                               }
                             })
                         : Center(child: Text("No messages found"));
@@ -504,6 +474,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   GestureDetector(
                     onTap: () {
                       selectFileToUpload("materials", FileType.any);
+                      Navigator.pop(context);
                     },
                     child: iconCreation(
                         Icons.insert_drive_file, kCyan, 'Material', context),
@@ -514,6 +485,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   GestureDetector(
                       onTap: () {
                         selectFileToUpload("assignments", FileType.any);
+
+                        Navigator.pop(context);
                       },
                       child: iconCreation(
                           Icons.assignment, kBlue, 'Assignment', context)),
@@ -523,6 +496,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   GestureDetector(
                       onTap: () {
                         selectFileToUpload("images", FileType.image);
+                        Navigator.pop(context);
                       },
                       child:
                           iconCreation(Icons.image, kPurple, 'Image', context))
