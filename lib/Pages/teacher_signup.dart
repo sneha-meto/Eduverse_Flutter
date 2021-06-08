@@ -114,109 +114,132 @@ class _TeacherState extends State<Teacher> {
                         ),
                         Padding(
                           padding: EdgeInsets.all(5.0),
-                          child: Container(
-                            height: 50.0,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15.0),
-                              border: Border.all(
-                                  color: Color(0xFF54ABD0), width: 2),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                  left: 15.0,
-                                  right: 3.0,
-                                  top: 3.0,
-                                  bottom: 3.0),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  value: _chosenValue,
-                                  //elevation: 5,
-                                  style: TextStyle(
-                                    color: Color(0xFFAAABB3),
-                                  ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButtonFormField<String>(
+                              isExpanded: true,
+                              value: _chosenValue,
+                              //elevation: 5,
+                              style: TextStyle(
+                                color: Color(0xFFAAABB3),
+                              ),
 
-                                  items: <String>[
-                                    'IT',
-                                    'CS',
-                                    'EC',
-                                  ].map<DropdownMenuItem<String>>(
+                              items: <String>[
+                                'IT',
+                                'CS',
+                                'EC',
+                              ].map<DropdownMenuItem<String>>(
                                       (String value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Text(value),
                                     );
                                   }).toList(),
-                                  hint: Text(
-                                    "Branch",
-                                    style: TextStyle(
-                                      color: Color(0xFFAAABB3),
-                                      fontSize: 17,
-                                      // fontWeight: FontWeight.w600
-                                    ),
-                                  ),
-                                  onChanged: (String value) {
-                                    setState(() {
-                                      _chosenValue = value;
-                                    });
-                                  },
+                              hint: Text(
+                                "Branch",
+                                style: TextStyle(
+                                  color: Color(0xFFAAABB3),
+                                  fontSize: 17, // fontWeight: FontWeight.w600
                                 ),
                               ),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFF54ABD0),
+                                    width: 2,
+                                  ),
+                                ),
+                                contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                                disabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFF54ABD0),
+                                    width: 2,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFF54ABD0),
+                                    width: 2,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  borderSide: BorderSide(color: Color(0xFF54ABD0), width: 2),
+                                ),
+                              ),
+                              onChanged: (String value) =>
+                                  setState(() => _chosenValue = value),
+                              validator: (value) => value == null ? 'This field is required' : null,
                             ),
                           ),
                         ),
                         Padding(
                           padding: EdgeInsets.all(5.0),
-                          child: Container(
-                            height: 50.0,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15.0),
-                              border: Border.all(
-                                  color: Color(0xFF54ABD0), width: 2),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                  left: 15.0,
-                                  right: 3.0,
-                                  top: 3.0,
-                                  bottom: 3.0),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  value: _designation,
-                                  //elevation: 5,
-                                  style: TextStyle(
-                                    color: Color(0xFFAAABB3),
-                                  ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButtonFormField<String>(
+                              isExpanded: true,
+                              value: _designation,
+                              //elevation: 5,
+                              style: TextStyle(
+                                color: Color(0xFFAAABB3),
+                              ),
 
-                                  items: <String>[
-                                    'HOD',
-                                    'Professor',
-                                    'Associate Professor',
-                                    'Assistant Professor',
-                                    'Guest Lecturer',
-                                  ].map<DropdownMenuItem<String>>(
-                                      (String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  hint: Text(
-                                    "Designation",
-                                    style: TextStyle(
-                                      color: Color(0xFFAAABB3),
-                                      fontSize: 17,
-                                      // fontWeight: FontWeight.w600
-                                    ),
-                                  ),
-                                  onChanged: (String value) {
-                                    setState(() {
-                                      _designation = value;
-                                    });
-                                  },
+                              items: <String>[
+                                'HOD',
+                                'Professor',
+                                'Associate Professor',
+                                'Assistant Professor',
+                                'Guest Lecturer',
+                              ].map<DropdownMenuItem<String>>(
+                                  (String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              hint: Text(
+                                "Designation",
+                                style: TextStyle(
+                                  color: Color(0xFFAAABB3),
+                                  fontSize: 17,
+                                  // fontWeight: FontWeight.w600
                                 ),
                               ),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFF54ABD0),
+                                    width: 2,
+                                  ),
+                                ),
+                                contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                                disabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFF54ABD0),
+                                    width: 2,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFF54ABD0),
+                                    width: 2,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  borderSide: BorderSide(color: Color(0xFF54ABD0), width: 2),
+                                ),
+                              ),
+                              onChanged: (String value) =>
+                                  setState(() => _designation = value),
+                              validator: (value) => value == null ? 'This field is required' : null,
                             ),
                           ),
                         ),
