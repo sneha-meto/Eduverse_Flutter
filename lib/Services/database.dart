@@ -39,12 +39,31 @@ class DatabaseMethods {
     });
   }
 
+  //chat screen
+  getMessages(collection, groupId) {
+    return FirebaseFirestore.instance
+        .collection(collection)
+        .doc(groupId)
+        .collection('messages')
+        .orderBy("time", descending: true)
+        .snapshots();
+  }
+
   void addMessage(collection, docId, messageData) {
     CollectionReference message = FirebaseFirestore.instance
         .collection(collection)
         .doc(docId)
         .collection('messages');
     message.add(messageData);
+  }
+
+  void deleteMessage(collection, docId, messageId) {
+    FirebaseFirestore.instance
+        .collection(collection)
+        .doc(docId)
+        .collection('messages')
+        .doc(messageId)
+        .delete();
   }
 
   Future addFile(collection, docId, messageData, String typeSelected) async {
@@ -67,6 +86,7 @@ class DatabaseMethods {
         .snapshots();
   }
 
+  //for listing page
   getChats(collection, groupId) {
     return FirebaseFirestore.instance
         .collection(collection)

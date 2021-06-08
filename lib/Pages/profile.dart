@@ -16,8 +16,6 @@ Map<String, String> info = {
   'Graduating Year': "",
   'Phone': "",
   'Designation': "",
-  'First Name': "",
-  'Last Name': ""
 };
 
 class Profile extends StatefulWidget {
@@ -42,8 +40,6 @@ class _ProfileState extends State<Profile> {
   saveEdit() async {
     if (Constants.myRole == "teacher") {
       Map<String, dynamic> user = {
-        'first_name': info['First Name'],
-        'last_name': info['Last Name'],
         'branch': info['Branch'],
         'designation': info['Designation'],
         'phone': info['Phone'],
@@ -53,8 +49,6 @@ class _ProfileState extends State<Profile> {
           .updateUser("teachers", _auth.currentUser.uid, user);
     } else {
       Map<String, dynamic> user = {
-        'first_name': info['First Name'],
-        'last_name': info['Last Name'],
         'branch': info['Branch'],
         'register_number': info['Register Number'],
         'graduating_year': info['Graduating Year'],
@@ -114,30 +108,11 @@ class _ProfileState extends State<Profile> {
                       )),
                 ),
                 Expanded(
-                  child: editMode
-                      ? Column(
-                          children: [
-                            TextField(
-                              controller: firstNameController,
-                              onChanged: (val) {
-                                info["First Name"] = val;
-                              },
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            TextField(
-                              controller: lastNameController,
-                              onChanged: (val) {
-                                info["Last Name"] = val;
-                              },
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        )
-                      : Text(Constants.myName,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800)),
+                  child: Text(Constants.myName,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800)),
                 ),
                 SizedBox(width: 10),
                 Padding(

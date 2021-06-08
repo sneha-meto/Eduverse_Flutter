@@ -138,6 +138,66 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Widget slideLeftBackground() {
+    return Container(
+      child: Align(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Icon(
+              Icons.delete,
+              color: Colors.red,
+            ),
+            Text(
+              " Delete",
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.w700,
+              ),
+              textAlign: TextAlign.right,
+            ),
+            SizedBox(
+              width: 20,
+            ),
+          ],
+        ),
+        alignment: Alignment.centerRight,
+      ),
+    );
+  }
+
+  Widget deleteAlert(messageId) {
+    return AlertDialog(
+      content: Text("Are you sure you want to delete?"),
+      actions: <Widget>[
+        TextButton(
+          child: Text(
+            "Cancel",
+            style: TextStyle(color: Colors.black),
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: Text(
+            "Delete",
+            style: TextStyle(color: Colors.red),
+          ),
+          onPressed: () {
+            widget.isGroup
+                ? DatabaseMethods()
+                    .deleteMessage("groups", widget.groupId, messageId)
+                : DatabaseMethods()
+                    .deleteMessage("chats", widget.groupId, messageId);
+
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -180,27 +240,15 @@ class _ChatScreenState extends State<ChatScreen> {
               icon: Icon(Icons.perm_media)),
         ],
       ),
-      body:
-//      Stack(children: [
-          Column(
+      body: Column(
         children: [
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: StreamBuilder(
                 stream: widget.isGroup
-                    ? FirebaseFirestore.instance
-                        .collection('groups')
-                        .doc(widget.groupId)
-                        .collection('messages')
-                        .orderBy("time", descending: true)
-                        .snapshots()
-                    : FirebaseFirestore.instance
-                        .collection('chats')
-                        .doc(widget.groupId)
-                        .collection('messages')
-                        .orderBy("time", descending: true)
-                        .snapshots(),
+                    ? DatabaseMethods().getMessages("groups", widget.groupId)
+                    : DatabaseMethods().getMessages("chats", widget.groupId),
                 builder: (context, userSnapshot) {
                   if (userSnapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
@@ -214,25 +262,62 @@ class _ChatScreenState extends State<ChatScreen> {
                             itemBuilder: (context, index) {
                               if (userSnapshot.data.docs[index]["file_type"] ==
                                   "images") {
-                                return Container(
-                                    color: Colors.transparent,
-                                    child: ImageBubble(
-                                      isUser: userSnapshot.data.docs[index]
-                                              ["sent_by"] ==
-                                          Constants.myName,
-                                      imageUrl: userSnapshot.data.docs[index]
-                                          ["text"],
-                                      time: userSnapshot.data.docs[index]
-                                          ["time"],
-                                      userName: userSnapshot.data.docs[index]
-                                          ["sent_by"],
-                                      fileName: userSnapshot.data.docs[index]
-                                          ["name"],
-                                    ));
+                                return Dismissible(
+                                  direction: userSnapshot.data.docs[index]
+                                              ["sent_by"] !=
+                                          Constants.myName
+                                      ? DismissDirection.none
+                                      : DismissDirection.endToStart,
+                                  confirmDismiss: (direction) async {
+                                    final bool res = await showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return deleteAlert(userSnapshot
+                                              .data.docs[index].reference.id);
+                                        });
+                                    return res;
+                                  },
+                                  background: slideLeftBackground(),
+                                  key: Key(
+                                      userSnapshot.data.docs[index].toString()),
+                                  child: Container(
+                                      color: Colors.transparent,
+                                      child: ImageBubble(
+                                        isUser: userSnapshot.data.docs[index]
+                                                ["sent_by"] ==
+                                            Constants.myName,
+                                        imageUrl: userSnapshot.data.docs[index]
+                                            ["text"],
+                                        time: userSnapshot.data.docs[index]
+                                            ["time"],
+                                        userName: userSnapshot.data.docs[index]
+                                            ["sent_by"],
+                                        fileName: userSnapshot.data.docs[index]
+                                            ["name"],
+                                      )),
+                                );
                               } else if (userSnapshot.data.docs[index]
                                       ["file_type"] ==
                                   "text") {
-                                return Container(
+                                return Dismissible(
+                                    direction: userSnapshot.data.docs[index]
+                                    ["sent_by"] !=
+                                    Constants.myName
+                                    ? DismissDirection.none
+                                        : DismissDirection.endToStart,
+                                    confirmDismiss: (direction) async {
+                                  final bool res = await showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return deleteAlert(userSnapshot
+                                            .data.docs[index].reference.id);
+                                      });
+                                  return res;
+                                },
+                              background: slideLeftBackground(),
+                              key: Key(
+                              userSnapshot.data.docs[index].toString()),
+                              child: Container(
                                     color: Colors.transparent,
                                     child: ChatBubble(
                                       isUser: userSnapshot.data.docs[index]
@@ -244,9 +329,27 @@ class _ChatScreenState extends State<ChatScreen> {
                                           ["time"],
                                       userName: userSnapshot.data.docs[index]
                                           ["sent_by"],
-                                    ));
+                                    )));
                               } else {
-                                return Container(
+                                return Dismissible(
+                                    direction: userSnapshot.data.docs[index]
+                                    ["sent_by"] !=
+                                    Constants.myName
+                                    ? DismissDirection.none
+                                        : DismissDirection.endToStart,
+                                    confirmDismiss: (direction) async {
+                                  final bool res = await showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return deleteAlert(userSnapshot
+                                            .data.docs[index].reference.id);
+                                      });
+                                  return res;
+                                },
+                              background: slideLeftBackground(),
+                              key: Key(
+                              userSnapshot.data.docs[index].toString()),
+                              child: Container(
                                     color: Colors.transparent,
                                     child: FileBubble(
                                         isUser: userSnapshot.data.docs[index]
@@ -265,7 +368,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                         fileSize: userSnapshot.data.docs[index]
                                             ["size"],
                                         category: userSnapshot.data.docs[index]
-                                            ["file_type"]));
+                                            ["file_type"])));
                               }
                             })
                         : Center(child: Text("No messages found"));
@@ -297,9 +400,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: Icon(Icons.send, color: Colors.white),
                     ),
                   ),
-                  // child: CircleAvatar(
-                  // child: Icon(Icons.send),
-                  // ),
                 ),
               ],
             ),
