@@ -1,16 +1,15 @@
-# eduverse
+# Eduverse
+<img width="100" src="https://github.com/sneha-meto/Eduverse_Flutter/blob/main/edulogo.png">
 
-A new Flutter application.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Integrated Student Management App
+Android Mini Project made with FlutterFire.
+### Features
+- Notice board, Upcoming tasks, Class Schedule
+- Subject specific group chats
+- Inbox for private messaging
+- Editable user profile
+- Role based authentication
+### Screenshots
+<img  src="https://github.com/sneha-meto/Eduverse_Flutter/blob/main/edu1.png">
+<img  src="https://github.com/sneha-meto/Eduverse_Flutter/blob/main/edu2.png">
+<img  src="https://github.com/sneha-meto/Eduverse_Flutter/blob/main/edu3.png">
