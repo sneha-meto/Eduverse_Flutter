@@ -167,7 +167,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget deleteAlert(messageId) {
+  Widget deleteAlert(messageId, type, map) {
     return AlertDialog(
       content: Text("Are you sure you want to delete?"),
       actions: <Widget>[
@@ -187,10 +187,10 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           onPressed: () {
             widget.isGroup
-                ? DatabaseMethods()
-                    .deleteMessage("groups", widget.groupId, messageId)
-                : DatabaseMethods()
-                    .deleteMessage("chats", widget.groupId, messageId);
+                ? DatabaseMethods().deleteMessage(
+                    "groups", widget.groupId, messageId, type, map)
+                : DatabaseMethods().deleteMessage(
+                    "chats", widget.groupId, messageId, type, map);
 
             Navigator.of(context).pop();
           },
@@ -199,7 +199,8 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget setDismiss({Widget childBubble, DocumentSnapshot messageSnap}) {
+  Widget setDismiss(
+      {Widget childBubble, String type, DocumentSnapshot messageSnap}) {
     return messageSnap["sent_by"] != Constants.myName
         ? childBubble
         : Dismissible(
@@ -208,7 +209,8 @@ class _ChatScreenState extends State<ChatScreen> {
               final bool res = await showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return deleteAlert(messageSnap.reference.id);
+                    return deleteAlert(
+                        messageSnap.reference.id, type, messageSnap.data());
                   });
               return res;
             },
@@ -283,6 +285,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   "images") {
                                 return setDismiss(
                                   messageSnap: userSnapshot.data.docs[index],
+                                  type: "images",
                                   childBubble: Container(
                                       color: Colors.transparent,
                                       child: ImageBubble(
@@ -304,6 +307,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   "text") {
                                 return setDismiss(
                                     messageSnap: userSnapshot.data.docs[index],
+                                    type: "text",
                                     childBubble: Container(
                                         color: Colors.transparent,
                                         child: ChatBubble(
@@ -320,6 +324,9 @@ class _ChatScreenState extends State<ChatScreen> {
                               } else {
                                 return setDismiss(
                                     messageSnap: userSnapshot.data.docs[index],
+                                    type: userSnapshot
+                                        .data.docs[index]["file_type"]
+                                        .toString(),
                                     childBubble: Container(
                                         color: Colors.transparent,
                                         child: FileBubble(
@@ -336,8 +343,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                                 ["sent_by"],
                                             fileExtension: userSnapshot
                                                 .data.docs[index]["extension"],
-                                            fileSize: userSnapshot.data.docs[index]
-                                                ["size"],
+                                            fileSize: userSnapshot.data.docs[index]["size"],
                                             category: userSnapshot.data.docs[index]["file_type"])));
                               }
                             })

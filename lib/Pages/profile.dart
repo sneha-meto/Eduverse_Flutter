@@ -25,8 +25,6 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   String roleCollection;
-  TextEditingController firstNameController = TextEditingController();
-  TextEditingController lastNameController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future getName() async {
@@ -76,15 +74,6 @@ class _ProfileState extends State<Profile> {
         editMode = false;
       });
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    firstNameController.text = Constants.myName.split(" ")[0];
-    lastNameController.text = Constants.myName.split(" ")[1];
-    info["First Name"] = Constants.myName.split(" ")[0];
-    info["Last Name"] = Constants.myName.split(" ")[1];
   }
 
   @override

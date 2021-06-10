@@ -57,13 +57,27 @@ class DatabaseMethods {
     message.add(messageData);
   }
 
-  void deleteMessage(collection, docId, messageId) {
+  void deleteMessage(collection, docId, messageId, type, fileMap) {
     FirebaseFirestore.instance
         .collection(collection)
         .doc(docId)
         .collection('messages')
         .doc(messageId)
         .delete();
+    if (type != "text") {
+      Map deleteMap = {
+        "text": fileMap["text"],
+        "name": fileMap["name"],
+        "size": fileMap["size"],
+        "extension": fileMap["extension"],
+        "time": fileMap["time"],
+        "sent_by": fileMap["sent_by"]
+      };
+
+      FirebaseFirestore.instance.collection(collection).doc(docId).update({
+        type: FieldValue.arrayRemove([deleteMap])
+      });
+    }
   }
 
   Future addFile(collection, docId, messageData, String typeSelected) async {
