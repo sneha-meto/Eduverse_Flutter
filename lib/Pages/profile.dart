@@ -65,10 +65,8 @@ class _ProfileState extends State<Profile> {
             info['Branch'].toLowerCase(), _auth.currentUser.uid);
       }
 
-      await UserHelper.saveName(info['First Name'] + " " + info['Last Name']);
       print(info['Branch']);
       await UserHelper.saveBranch(info['Branch'].toLowerCase());
-      Constants.myName = await UserHelper.getName();
       Constants.myBranch = await UserHelper.getBranch();
       setState(() {
         editMode = false;
