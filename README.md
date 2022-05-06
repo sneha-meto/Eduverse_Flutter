@@ -1,8 +1,8 @@
 # Eduverse
 <img width="100" src="https://github.com/sneha-meto/Eduverse_Flutter/blob/main/edulogo.png">
 
-## Integrated Student Management App
-Android Mini Project made with FlutterFire.
+## Integrated Application Management App
+Android Project made with FlutterFire.
 ### Features
 - Notice board, Upcoming tasks, Class Schedule
 - Subject specific group chats
@@ -10,6 +10,13 @@ Android Mini Project made with FlutterFire.
 - Editable user profile
 - Role based authentication
 ### Screenshots
-<img  src="https://github.com/sneha-meto/Eduverse_Flutter/blob/main/edu1.png">
-<img  src="https://github.com/sneha-meto/Eduverse_Flutter/blob/main/edu2.png">
-<img  src="https://github.com/sneha-meto/Eduverse_Flutter/blob/main/edu3.png">
+<img  src="https://github.com/Sangeethasuseel/2022_IBM_Code_Challenge_Egovernex/blob/main/blob/Application.jpeg">
+<img  src="https://github.com/Sangeethasuseel/2022_IBM_Code_Challenge_Egovernex/blob/main/blob/Login.jpeg">
+<img  src="https://github.com/Sangeethasuseel/2022_IBM_Code_Challenge_Egovernex/blob/main/blob/Registration.jpeg">
+<img  src="https://github.com/Sangeethasuseel/2022_IBM_Code_Challenge_Egovernex/blob/main/blob/profile.jpeg">
+<img  src="https://github.com/Sangeethasuseel/2022_IBM_Code_Challenge_Egovernex/blob/main/blob/preview.jpeg">
+<img  src="https://github.com/Sangeethasuseel/2022_IBM_Code_Challenge_Egovernex/blob/main/blob/status.jpeg">
+<img  src="https://github.com/Sangeethasuseel/2022_IBM_Code_Challenge_Egovernex/blob/main/blob/home.jpeg">
+<img  src="https://github.com/Sangeethasuseel/2022_IBM_Code_Challenge_Egovernex/blob/main/blob/appstatus.jpeg">
+
+
