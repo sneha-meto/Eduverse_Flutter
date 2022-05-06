@@ -10,6 +10,6 @@ Android Mini Project made with FlutterFire.
 - Editable user profile
 - Role based authentication
 ### Screenshots
-<img  src="https://github.com/sneha-meto/Eduverse_Flutter/blob/main/edu1.png">
-<img  src="https://github.com/sneha-meto/Eduverse_Flutter/blob/main/edu2.png">
-<img  src="https://github.com/sneha-meto/Eduverse_Flutter/blob/main/edu3.png">
+<img  src="https://github.com/Sangeethasuseel/2022_IBM_Code_Challenge_Egovernex/blob/main/blob/appstatus.jpeg">
+<img  src="https://github.com/Sangeethasuseel/2022_IBM_Code_Challenge_Egovernex/blob/main/blob/appstatus.jpeg">
+<img  src="https://github.com/Sangeethasuseel/2022_IBM_Code_Challenge_Egovernex/blob/main/blob/appstatus.jpeg">
